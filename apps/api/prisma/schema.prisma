@@ -33,19 +33,27 @@ enum CompanyOperationType {
 }
 
 model CompanyOperation {
-  id        String                (uuid())
+  id        String               @id @default(uuid())
   companyId String
   type      CompanyOperationType
 
-  company   Company (fields: [companyId], references: [id], onDelete: Cascade)
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  @([companyId, type])
+  @@unique([companyId, type])
 }
 
 model Company {
   id        String   @id @default(uuid())
   name      String
   cnpj      String?  @unique
+
+  // PJ Telecom (novo - compatível)
+  razaoSocial          String?
+  responsavelTecnico   String?
+  registroProfissional String?
+  isActive             Boolean  @default(true)
+
+  operations           CompanyOperation[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

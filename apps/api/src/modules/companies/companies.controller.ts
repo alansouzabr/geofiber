@@ -91,7 +91,6 @@ export class CompaniesController {
       responsavelTecnico: string;
       registroProfissional: string;
       tiposOperacao: Array<'FTTH' | 'BACKBONE' | 'DATACENTER'>;
-      // opcional: preencher também o name por compatibilidade
       name?: string;
     },
   ) {
@@ -112,15 +111,13 @@ export class CompaniesController {
 
     const company = await this.prisma.company.create({
       data: {
-        name: data.name || data.razaoSocial, // mantém compatibilidade
+        name: data.name || data.razaoSocial, // compatibilidade
         cnpj: cnpjDigits,
         razaoSocial: data.razaoSocial,
         responsavelTecnico: data.responsavelTecnico,
         registroProfissional: data.registroProfissional,
         isActive: true,
-        operations: {
-          create: data.tiposOperacao.map((t) => ({ type: t })),
-        },
+        operations: { create: data.tiposOperacao.map((t) => ({ type: t })) },
       },
       select: { id: true, name: true, cnpj: true, razaoSocial: true, isActive: true },
     });
@@ -128,7 +125,7 @@ export class CompaniesController {
     return { ok: true, company };
   }
 
-  // NOVO: Ativar/desativar empresa
+  // (por enquanto com JwtAuthGuard; no próximo passo a gente restringe para MASTER com seu guard de permissões)
   @UseGuards(JwtAuthGuard)
   @Patch(':id/activate')
   async activate(@Param('id') id: string) {
