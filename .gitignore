@@ -6,3 +6,7 @@ dist
 .DS_Store
 coverage
 pnpm-lock.yaml
+
+# backups locais (não versionar)
+*.bak.*
+*.BROKEN.*
