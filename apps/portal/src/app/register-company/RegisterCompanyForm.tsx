@@ -67,10 +67,11 @@ export default function RegisterCompanyForm() {
       // opcional: limpar campos
       // setRazaoSocial(''); setCnpj(''); setResponsavelTecnico(''); setRegistroProfissional('');
       // setTiposOperacao(['FTTH']);
-    } catch (err: any) {
-      setOk(false);
-      setMsg(err?.message || 'Erro inesperado');
-    } finally {
+    } catch (err: unknown) {
+        setOk(false);
+        const message = err instanceof Error ? err.message : 'Erro inesperado';
+        setMsg(message);
+      } finally {
       setLoading(false);
     }
   }
