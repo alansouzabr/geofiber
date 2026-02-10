@@ -1,16 +1,17 @@
 'use client';
 
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { apiFetch } from '@/lib/api';
 
 type Op = 'FTTH' | 'BACKBONE' | 'DATACENTER';
 
 export default function RegisterCompanyForm() {
-  const ops: { key: Op; label: string }[] = useMemo(
+  const ops: { key: Op; label: string; help: string }[] = useMemo(
     () => [
-      { key: 'FTTH', label: 'Provedor FTTH' },
-      { key: 'BACKBONE', label: 'Backbone' },
-      { key: 'DATACENTER', label: 'Datacenter' },
+      { key: 'FTTH', label: 'Provedor FTTH', help: 'Acesso FTTH' },
+      { key: 'BACKBONE', label: 'Backbone', help: 'Rede de transporte' },
+      { key: 'DATACENTER', label: 'Datacenter', help: 'Infra DC' },
     ],
     [],
   );
@@ -45,110 +46,199 @@ export default function RegisterCompanyForm() {
       const res = await apiFetch('/companies/register-telecom', {
         method: 'POST',
         body: JSON.stringify({
-          razaoSocial,
-          cnpj,
-          responsavelTecnico,
-          registroProfissional,
+          razaoSocial: razaoSocial.trim(),
+          cnpj: cnpj.trim(),
+          responsavelTecnico: responsavelTecnico.trim(),
+          registroProfissional: registroProfissional.trim(),
           tiposOperacao,
         }),
       });
 
-      const data = await res.json().catch(() => ({}));
+      const data = await res.json().catch(() => null);
 
-      if (!res.ok || !data?.ok) {
-        setMsg(data?.error || data?.message || 'Falha ao cadastrar');
+      if (!res.ok) {
+        setOk(false);
+        setMsg(data?.message || data?.error || 'Falha ao cadastrar empresa');
         return;
       }
 
       setOk(true);
-      setMsg('Empresa cadastrada com sucesso!');
+      setMsg('Empresa cadastrada com sucesso! Você já pode voltar para o login.');
+      // opcional: limpar campos
+      // setRazaoSocial(''); setCnpj(''); setResponsavelTecnico(''); setRegistroProfissional('');
+      // setTiposOperacao(['FTTH']);
     } catch (err: any) {
-      setMsg(err?.message || 'Erro de rede');
+      setOk(false);
+      setMsg(err?.message || 'Erro inesperado');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <main className="gf-page">
-      <section className="gf-shell" style={{ gridTemplateColumns: '1fr' }}>
-        <div className="gf-card gf-card-pad" style={{ maxWidth: 820, margin: '0 auto', width: '100%' }}>
-          <h1 className="gf-brand" style={{ marginBottom: 6 }}>
-            GeoFiber Maps
-          </h1>
-          <p className="gf-muted" style={{ marginTop: 0 }}>
-            Cadastro de <b>Empresa PJ Telecom</b> (FTTH / Backbone / Datacenter)
-          </p>
+    <main
+      style={{
+        minHeight: '100vh',
+        display: 'grid',
+        placeItems: 'center',
+        padding: 18,
+      }}
+    >
+      <section style={{ width: '100%', maxWidth: 520 }}>
+        <div
+          style={{
+            borderRadius: 16,
+            border: '1px solid rgba(255,255,255,0.10)',
+            background: 'rgba(10, 15, 20, 0.65)',
+            backdropFilter: 'blur(8px)',
+            padding: 18,
+          }}
+        >
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ fontSize: 20, fontWeight: 900, letterSpacing: 0.2 }}>
+              Cadastro de Empresa PJ (Telecom)
+            </div>
+            <div style={{ opacity: 0.85, marginTop: 6, fontSize: 13 }}>
+              Informe os dados abaixo e selecione os tipos de operação.
+            </div>
+          </div>
 
-          <form onSubmit={onSubmit} style={{ marginTop: 16 }}>
-            <label className="gf-label">Razão Social</label>
-            <input className="gf-input" value={razaoSocial} onChange={(e) => setRazaoSocial(e.target.value)} />
-
-            <label className="gf-label">CNPJ</label>
+          <form onSubmit={onSubmit}>
+            <label style={{ display: 'block', marginTop: 10, fontSize: 13, opacity: 0.9 }}>
+              Razão Social
+            </label>
             <input
-              className="gf-input"
+              value={razaoSocial}
+              onChange={(e) => setRazaoSocial(e.target.value)}
+              placeholder="Ex: GeoFiber Telecom LTDA"
+              style={inputStyle}
+              autoComplete="organization"
+            />
+
+            <label style={{ display: 'block', marginTop: 10, fontSize: 13, opacity: 0.9 }}>
+              CNPJ
+            </label>
+            <input
               value={cnpj}
               onChange={(e) => setCnpj(e.target.value)}
               placeholder="00.000.000/0000-00"
+              style={inputStyle}
+              inputMode="numeric"
+              autoComplete="off"
             />
 
-            <label className="gf-label">Responsável técnico</label>
+            <label style={{ display: 'block', marginTop: 10, fontSize: 13, opacity: 0.9 }}>
+              Responsável técnico
+            </label>
             <input
-              className="gf-input"
               value={responsavelTecnico}
               onChange={(e) => setResponsavelTecnico(e.target.value)}
+              placeholder="Nome do responsável"
+              style={inputStyle}
+              autoComplete="name"
             />
 
-            <label className="gf-label">CREA / CFT</label>
+            <label style={{ display: 'block', marginTop: 10, fontSize: 13, opacity: 0.9 }}>
+              CREA / CFT
+            </label>
             <input
-              className="gf-input"
               value={registroProfissional}
               onChange={(e) => setRegistroProfissional(e.target.value)}
               placeholder="Ex: CREA 123456 / CFT 123456"
+              style={inputStyle}
+              autoComplete="off"
             />
 
-            <label className="gf-label">Tipo de operação (múltiplo)</label>
-            <div style={{ display: 'grid', gap: 10, gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))' }}>
-              {ops.map((o) => (
-                <label key={o.key} className="gf-card" style={{ padding: 12, boxShadow: 'none' }}>
-                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                    <input type="checkbox" checked={tiposOperacao.includes(o.key)} onChange={() => toggle(o.key)} />
+            <div style={{ marginTop: 14, fontSize: 13, opacity: 0.9 }}>Tipos de operação</div>
+
+            <div style={{ display: 'grid', gap: 10, marginTop: 10 }}>
+              {ops.map((o) => {
+                const checked = tiposOperacao.includes(o.key);
+                return (
+                  <button
+                    key={o.key}
+                    type="button"
+                    onClick={() => toggle(o.key)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                      padding: 12,
+                      borderRadius: 12,
+                      border: checked
+                        ? '1px solid rgba(0,255,180,0.55)'
+                        : '1px solid rgba(255,255,255,0.10)',
+                      background: checked ? 'rgba(0,255,180,0.10)' : 'rgba(255,255,255,0.04)',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      readOnly
+                      style={{ width: 16, height: 16 }}
+                    />
                     <div>
-                      <div style={{ fontWeight: 800, color: 'var(--gf-text)' }}>{o.label}</div>
-                      <div className="gf-muted" style={{ fontSize: 13 }}>
-                        {o.key}
-                      </div>
+                      <div style={{ fontWeight: 800 }}>{o.label}</div>
+                      <div style={{ fontSize: 12, opacity: 0.75, marginTop: 2 }}>{o.help}</div>
                     </div>
-                  </div>
-                </label>
-              ))}
+                  </button>
+                );
+              })}
             </div>
 
-            <div style={{ marginTop: 16 }}>
-              <button className="gf-btn" type="submit" disabled={loading}>
-                {loading ? 'Cadastrando...' : 'Cadastrar empresa'}
-              </button>
-            </div>
-
-            <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', gap: 10 }}>
-              <a className="gf-link" href="/login">
-                Voltar para login
-              </a>
-              {ok ? (
-                <a className="gf-link" href="/login">
-                  Ir para login
-                </a>
-              ) : null}
-            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: '100%',
+                marginTop: 16,
+                padding: '12px 14px',
+                borderRadius: 12,
+                border: 'none',
+                background: 'linear-gradient(90deg, rgba(0,200,255,1), rgba(0,255,180,1))',
+                fontWeight: 900,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.7 : 1,
+              }}
+            >
+              {loading ? 'Cadastrando...' : 'Cadastrar empresa'}
+            </button>
 
             {msg ? (
-              <div style={{ marginTop: 12, color: ok ? 'var(--gf-success)' : 'var(--gf-danger)', fontWeight: 800 }}>
+              <div
+                style={{
+                  marginTop: 12,
+                  color: ok ? 'rgba(0,255,180,0.95)' : 'rgba(255,80,100,0.95)',
+                  fontWeight: 800,
+                }}
+              >
                 {msg}
               </div>
             ) : null}
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 14 }}>
+              <Link href="/login" style={{ fontSize: 13, opacity: 0.85 }}>
+                Voltar para login
+              </Link>
+              <Link href="/" style={{ fontSize: 13, opacity: 0.85 }}>
+                Ir para início
+              </Link>
+            </div>
           </form>
         </div>
       </section>
     </main>
   );
 }
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '12px 12px',
+  borderRadius: 12,
+  border: '1px solid rgba(255,255,255,0.10)',
+  background: 'rgba(255,255,255,0.04)',
+  outline: 'none',
+  marginTop: 6,
+};
