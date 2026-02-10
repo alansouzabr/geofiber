@@ -26,6 +26,22 @@ enum IntegrationEventStatus {
   ERROR
 }
 
+enum CompanyOperationType {
+  FTTH
+  BACKBONE
+  DATACENTER
+}
+
+model CompanyOperation {
+  id        String                (uuid())
+  companyId String
+  type      CompanyOperationType
+
+  company   Company (fields: [companyId], references: [id], onDelete: Cascade)
+
+  @([companyId, type])
+}
+
 model Company {
   id        String   @id @default(uuid())
   name      String
