@@ -29,7 +29,7 @@ function maskCnpj(v: string) {
 
 function isValidCnpj(input: string) {
   const cnpj = onlyDigits(input);
-  if (cnpj.length !== 14) return false;
+  if (cnpj.length != 14) return false;
   if (/^(\d)\1{13}$/.test(cnpj)) return false;
 
   const calc = (base: number[]) => {
@@ -266,3 +266,4 @@ export default function RegisterCompanyForm() {
     </div>
   );
 }
+
