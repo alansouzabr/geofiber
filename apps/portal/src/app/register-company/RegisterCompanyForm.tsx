@@ -22,7 +22,7 @@ export default function RegisterCompanyForm() {
   const [tiposOperacao, setTiposOperacao] = useState<Op[]>(['FTTH']);
 
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState<string>('');
+  const [msg, setMsg] = useState('');
   const [ok, setOk] = useState(false);
 
   function toggle(op: Op) {
@@ -53,15 +53,10 @@ export default function RegisterCompanyForm() {
         }),
       });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setMsg(data?.error || data?.message || 'Falha ao cadastrar');
-        return;
-      }
-
       const data = await res.json().catch(() => ({}));
-      if (!data?.ok) {
-        setMsg(data?.error || 'Falha ao cadastrar');
+
+      if (!res.ok || !data?.ok) {
+        setMsg(data?.error || data?.message || 'Falha ao cadastrar');
         return;
       }
 
@@ -78,7 +73,9 @@ export default function RegisterCompanyForm() {
     <main className="gf-page">
       <section className="gf-shell" style={{ gridTemplateColumns: '1fr' }}>
         <div className="gf-card gf-card-pad" style={{ maxWidth: 820, margin: '0 auto', width: '100%' }}>
-          <h1 className="gf-brand" style={{ marginBottom: 6 }}>GeoFiber Maps</h1>
+          <h1 className="gf-brand" style={{ marginBottom: 6 }}>
+            GeoFiber Maps
+          </h1>
           <p className="gf-muted" style={{ marginTop: 0 }}>
             Cadastro de <b>Empresa PJ Telecom</b> (FTTH / Backbone / Datacenter)
           </p>
@@ -88,27 +85,39 @@ export default function RegisterCompanyForm() {
             <input className="gf-input" value={razaoSocial} onChange={(e) => setRazaoSocial(e.target.value)} />
 
             <label className="gf-label">CNPJ</label>
-            <input className="gf-input" value={cnpj} onChange={(e) => setCnpj(e.target.value)} placeholder="00.000.000/0000-00" />
+            <input
+              className="gf-input"
+              value={cnpj}
+              onChange={(e) => setCnpj(e.target.value)}
+              placeholder="00.000.000/0000-00"
+            />
 
             <label className="gf-label">Responsável técnico</label>
-            <input className="gf-input" value={responsavelTecnico} onChange={(e) => setResponsavelTecnico(e.target.value)} />
+            <input
+              className="gf-input"
+              value={responsavelTecnico}
+              onChange={(e) => setResponsavelTecnico(e.target.value)}
+            />
 
             <label className="gf-label">CREA / CFT</label>
-            <input className="gf-input" value={registroProfissional} onChange={(e) => setRegistroProfissional(e.target.value)} placeholder="Ex: CREA 123456 / CFT 123456" />
+            <input
+              className="gf-input"
+              value={registroProfissional}
+              onChange={(e) => setRegistroProfissional(e.target.value)}
+              placeholder="Ex: CREA 123456 / CFT 123456"
+            />
 
             <label className="gf-label">Tipo de operação (múltiplo)</label>
             <div style={{ display: 'grid', gap: 10, gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))' }}>
               {ops.map((o) => (
                 <label key={o.key} className="gf-card" style={{ padding: 12, boxShadow: 'none' }}>
                   <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                    <input
-                      type="checkbox"
-                      checked={tiposOperacao.includes(o.key)}
-                      onChange={() => toggle(o.key)}
-                    />
+                    <input type="checkbox" checked={tiposOperacao.includes(o.key)} onChange={() => toggle(o.key)} />
                     <div>
                       <div style={{ fontWeight: 800, color: 'var(--gf-text)' }}>{o.label}</div>
-                      <div className="gf-muted" style={{ fontSize: 13 }}>{o.key}</div>
+                      <div className="gf-muted" style={{ fontSize: 13 }}>
+                        {o.key}
+                      </div>
                     </div>
                   </div>
                 </label>
@@ -122,8 +131,14 @@ export default function RegisterCompanyForm() {
             </div>
 
             <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', gap: 10 }}>
-              <a className="gf-link" href="/login">Voltar para login</a>
-              {ok ? <a className="gf-link" href="/login">Ir para login</a> : null}
+              <a className="gf-link" href="/login">
+                Voltar para login
+              </a>
+              {ok ? (
+                <a className="gf-link" href="/login">
+                  Ir para login
+                </a>
+              ) : null}
             </div>
 
             {msg ? (
