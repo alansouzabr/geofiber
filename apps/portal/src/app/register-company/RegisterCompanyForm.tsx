@@ -73,8 +73,7 @@ export default function RegisterCompanyForm() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-6">
+    <div className="w-full max-w-md rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-6">
         <div className="mb-6">
           <h1 className="text-xl font-black">Cadastro PJ Telecom</h1>
           <p className="text-sm opacity-80 mt-1">
@@ -154,6 +153,5 @@ export default function RegisterCompanyForm() {
           </div>
         </form>
       </div>
-    </main>
-  );
+    );
 }
