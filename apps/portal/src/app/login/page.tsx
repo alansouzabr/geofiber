@@ -1,39 +1,28 @@
-import AuthShell from '@/components/auth/AuthShell';
 import Link from 'next/link';
-
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+import { AuthCard } from '@/components/AuthCard';
 
 export default function LoginPage() {
   return (
-    <AuthShell
-      title="Entrar"
-      subtitle="Acesse sua conta para gerenciar sua empresa e operações (FTTH/Backbone/Datacenter)."
-    >
-      <form>
-        <div className="gf-field">
-          <label className="gf-label">E-mail</label>
-          <input className="gf-input" placeholder="voce@empresa.com" />
-        </div>
+    <main className="min-h-screen flex items-center justify-center px-4">
+      <AuthCard
+        title="Entrar"
+        subtitle="Acesse sua conta para gerenciar sua empresa e operações."
+      >
+        <form className="space-y-4">
+          <input className="input" placeholder="E-mail" />
+          <input className="input" type="password" placeholder="Senha" />
+          <button
+            type="button"
+            className="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 py-3 font-black text-black"
+          >
+            Entrar
+          </button>
 
-        <div className="gf-field">
-          <label className="gf-label">Senha</label>
-          <input className="gf-input" type="password" placeholder="••••••••" />
-        </div>
-
-        <button className="gf-btn" type="button">
-          Entrar
-        </button>
-
-        <div className="gf-linkrow">
-          <span>Sem conta?</span>
-          <Link href="/register-company">Cadastrar empresa</Link>
-        </div>
-
-        <div className="gf-msg" style={{ display: 'none' }}>
-          {/* reservado para mensagens */}
-        </div>
-      </form>
-    </AuthShell>
+          <div className="flex justify-between text-sm opacity-80">
+            <Link href="/register-company">Cadastrar empresa</Link>
+          </div>
+        </form>
+      </AuthCard>
+    </main>
   );
 }
