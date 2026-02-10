@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
 import { JwtAuthGuard } from '../auth/jwt.guard';
-import { RootGuard } from '../root/root.guard';
 import { PrismaService } from '../prisma/prisma.service';
+import { RootGuard } from '../root/root.guard';
 import { z } from 'zod';
 
 @Controller('companies')
@@ -112,7 +112,7 @@ export class CompaniesController {
 
     const company = await this.prisma.company.create({
       data: {
-        name: data.name || data.razaoSocial, // compatibilidade
+        name: data.name || data.razaoSocial,
         cnpj: cnpjDigits,
         razaoSocial: data.razaoSocial,
         responsavelTecnico: data.responsavelTecnico,
@@ -126,9 +126,11 @@ export class CompaniesController {
     return { ok: true, company };
   }
 
-  // (por enquanto com JwtAuthGuard; no próximo passo a gente restringe para MASTER com seu guard de permissões)
-  (JwtAuthGuard, RootGuard)
-  (':id/activate')
+  // ============================
+  // MASTER/ROOT ONLY
+  // ============================
+  @UseGuards(JwtAuthGuard, RootGuard)
+  @Patch(':id/activate')
   async activate(@Param('id') id: string) {
     const company = await this.prisma.company.update({
       where: { id },
@@ -138,8 +140,8 @@ export class CompaniesController {
     return { ok: true, company };
   }
 
-  (JwtAuthGuard, RootGuard)
-  (':id/deactivate')
+  @UseGuards(JwtAuthGuard, RootGuard)
+  @Patch(':id/deactivate')
   async deactivate(@Param('id') id: string) {
     const company = await this.prisma.company.update({
       where: { id },
