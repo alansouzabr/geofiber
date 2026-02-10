@@ -24,4 +24,3 @@ export interface RootCompaniesResponse {
 export interface Project { id: string; name: string; }
 export interface Station { id: string; name: string; }
 export interface Rack { id: string; name: string; }
-// test
