@@ -18,9 +18,10 @@ export interface ApiCompaniesResponse {
 }
 
 export interface RootCompaniesResponse {
-  result: any;
+  result: unknown;
 }
 
 export interface Project { id: string; name: string; }
 export interface Station { id: string; name: string; }
 export interface Rack { id: string; name: string; }
+// test
