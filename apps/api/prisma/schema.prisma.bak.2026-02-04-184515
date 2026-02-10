@@ -1,0 +1,339 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum IntegrationProvider {
+  SGP
+  IXC
+  OTHER
+}
+
+enum IntegrationAuthType {
+  API_KEY
+  BASIC
+  OAUTH2
+}
+
+enum IntegrationEventStatus {
+  PENDING
+  PROCESSING
+  DONE
+  ERROR
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  cnpj      String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users          User[]
+  roles          Role[]
+  technicians    FieldTechnicianProfile[]
+  permissions    Permission[]
+  projects       Project[]
+  audits         AuditLog[]
+  integrations   IntegrationConnection[]
+  mappings       IntegrationMapping[]
+  events         IntegrationEvent[]
+  stations       Station[]
+  racks          Rack[]
+  rackEquipments RackEquipment[]
+  fiberSignals   FiberSignal[]
+}
+
+model User {
+  id           String   @id @default(uuid())
+  companyId    String?
+  email        String   
+  name         String
+  passwordHash String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  company     Company                 @relation(fields: [companyId], references: [id])
+  roles       UserRole[]
+  audits      AuditLog[]
+  techProfile FieldTechnicianProfile?
+
+  @@unique([companyId, email])
+}
+
+model Role {
+  id        String   @id @default(uuid())
+  companyId String
+  name      String
+  createdAt DateTime @default(now())
+
+  company Company          @relation(fields: [companyId], references: [id])
+  users   UserRole[]
+  perms   RolePermission[]
+
+  @@unique([companyId, name])
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  companyId   String
+  key         String
+  description String?
+  createdAt   DateTime @default(now())
+
+  company Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  roles   RolePermission[]
+
+  @@unique([companyId, key])
+}
+
+model UserRole {
+  id     String @id @default(uuid())
+  userId String
+  roleId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+}
+
+model RolePermission {
+  id           String @id @default(uuid())
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  companyId   String
+  actorUserId String?
+  action      String
+  entity      String
+  entityId    String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  actor   User?   @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+}
+
+model Project {
+  id        String   @id @default(uuid())
+  companyId String
+  name      String
+  city      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company  Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  stations Station[]
+}
+
+model IntegrationConnection {
+  id              String              @id @default(uuid())
+  companyId       String
+  provider        IntegrationProvider
+  baseUrl         String
+  authType        IntegrationAuthType
+  secretEncrypted String
+  isEnabled       Boolean             @default(true)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, provider])
+}
+
+model IntegrationMapping {
+  id         String              @id @default(uuid())
+  companyId  String
+  provider   IntegrationProvider
+  entityType String
+  externalId String
+  internalId String
+  updatedAt  DateTime            @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, provider, entityType, externalId])
+}
+
+model IntegrationEvent {
+  id        String                 @id @default(uuid())
+  companyId String
+  provider  IntegrationProvider
+  eventType String
+  payload   Json
+  status    IntegrationEventStatus @default(PENDING)
+  tries     Int                    @default(0)
+  lastError String?
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+enum TechnicianSpecialty {
+  TELEFONIA
+  REDE
+  TRANSMISSAO
+  FTTH
+  FUSIONISTA
+}
+
+model FieldTechnicianProfile {
+  id        String @id @default(uuid())
+  companyId String
+  userId    String @unique
+
+  document     String? // CPF/RG etc
+  cboCode      String? // ex: 3133-10 / 3133-15 / 3133-20
+  registration String? // CREA/CRT/registro interno
+  phone        String?
+  whatsapp     String?
+  city         String?
+  state        String?
+
+  specialties TechnicianSpecialty[] @default([])
+
+  skills         Json? // { otdr:true, fusion:true, gpon:true, ... }
+  certifications Json? // [{name, org, date, expiresAt}]
+  tools          Json? // [{name, model, serial}]
+  vehicle        Json? // {plate, type}
+  availability   Json? // {weekdays, shifts, onCall}
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+enum StationType {
+  POP
+  ARMARIO
+  TORRE
+  SALA_TECNICA
+  OUTRO
+}
+
+enum EquipmentType {
+  OLT
+  DIO
+  SPLITTER
+  PATCH_PANEL
+  ODF
+  ONU
+  ROUTER
+  SWITCH
+  OUTRO
+}
+
+model Station {
+  id        String      @id @default(uuid())
+  companyId String
+  projectId String
+  type      StationType @default(POP)
+  name      String
+  address   String?
+  lat       Float?
+  lng       Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id])
+  project Project @relation(fields: [projectId], references: [id])
+
+  racks Rack[]
+
+  @@index([companyId, projectId])
+}
+
+model Rack {
+  id        String @id @default(uuid())
+  companyId String
+  stationId String
+  name      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id])
+  station Station @relation(fields: [stationId], references: [id])
+
+  equipments RackEquipment[]
+
+  @@index([companyId, stationId])
+}
+
+model RackEquipment {
+  id        String @id @default(uuid())
+  companyId String
+  rackId    String
+
+  name   String
+  type   EquipmentType
+  vendor String?
+  model  String?
+  serial String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company     Company      @relation(fields: [companyId], references: [id])
+  rack        Rack         @relation(fields: [rackId], references: [id])
+  fiberSignal FiberSignal?
+
+  @@index([companyId, rackId])
+}
+
+enum SignalMode {
+  STATIC
+  RANDOM_WALK
+}
+
+model FiberSignal {
+  id              String @id @default(uuid())
+  companyId       String
+  rackEquipmentId String @unique
+
+  enabled Boolean    @default(true)
+  mode    SignalMode @default(RANDOM_WALK)
+
+  targetTxDbm Float @default(0)
+  targetRxDbm Float @default(-20)
+
+  attenuationDb Float @default(0)
+  noiseDb       Float @default(0)
+
+  // controla "o quanto muda por tick" no RANDOM_WALK
+  steps Int @default(20)
+
+  // estado atual
+  txDbm Float @default(0)
+  rxDbm Float @default(-20)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  rackEquipment RackEquipment @relation(fields: [rackEquipmentId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}

@@ -1,0 +1,70 @@
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+
+@Injectable()
+export class RootService {
+  constructor(private prisma: PrismaService) {}
+
+  async createCompanyWithAdmin(input: {
+    company: { name: string; cnpj?: string | null };
+    admin: { email: string; name: string; password: string };
+  }) {
+    const bcrypt = require('bcryptjs');
+
+    const companyName = String(input?.company?.name || '').trim();
+    if (!companyName) throw new BadRequestException('company.name é obrigatório');
+
+    const adminEmail = String(input?.admin?.email || '').trim().toLowerCase();
+    const adminName = String(input?.admin?.name || '').trim();
+    const adminPassword = String(input?.admin?.password || '');
+
+    if (!adminEmail) throw new BadRequestException('admin.email é obrigatório');
+    if (!adminName) throw new BadRequestException('admin.name é obrigatório');
+    if (adminPassword.length < 8) throw new BadRequestException('admin.password precisa ter no mínimo 8 caracteres');
+
+    // 1) cria company
+    const company = await this.prisma.company.create({
+      data: {
+        name: companyName,
+        cnpj: input.company.cnpj ?? null,
+      },
+      select: { id: true, name: true, cnpj: true, createdAt: true },
+    });
+
+    // 2) garante role ADMIN na empresa
+    const roleAdmin = await this.prisma.role.upsert({
+      where: { companyId_name: { companyId: company.id, name: 'ADMIN' } },
+      update: {},
+      create: { companyId: company.id, name: 'ADMIN' },
+      select: { id: true, name: true },
+    });
+
+    // 3) cria/atualiza usuário admin (companyId = company.id)
+    const passwordHash = await bcrypt.hash(adminPassword, 10);
+
+    const existing = await this.prisma.user.findFirst({
+      where: { companyId: company.id, email: adminEmail },
+      select: { id: true },
+    });
+
+    const adminUser = existing
+      ? await this.prisma.user.update({
+          where: { id: existing.id },
+          data: { name: adminName, passwordHash, isActive: true },
+          select: { id: true, email: true, name: true, companyId: true, createdAt: true },
+        })
+      : await this.prisma.user.create({
+          data: {
+            companyId: company.id,
+            email: adminEmail,
+            name: adminName,
+            passwordHash,
+            isActive: true,
+            roles: { create: [{ roleId: roleAdmin.id }] },
+          },
+          select: { id: true, email: true, name: true, companyId: true, createdAt: true },
+        });
+
+    return { company, adminUser, roleAdmin };
+  }
+}

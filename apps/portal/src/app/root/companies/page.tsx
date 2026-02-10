@@ -1,0 +1,59 @@
+'use client';
+
+import { useState } from 'react';
+import { apiFetch } from '../../../lib/api';
+import Link from 'next/link';
+
+export default function RootCompaniesPage() {
+  const [companyName, setCompanyName] = useState('Provedor Gamma');
+  const [cnpj, setCnpj] = useState('22222222000199');
+  const [adminEmail, setAdminEmail] = useState('admin@provedorgamma.com');
+  const [adminName, setAdminName] = useState('Admin Gamma');
+  const [adminPass, setAdminPass] = useState('Admin@12345');
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function create() {
+    setError(null);
+    setResult(null);
+    try {
+      const res = await apiFetch('/root/companies', {
+        method: 'POST',
+        body: JSON.stringify({
+          company: { name: companyName, cnpj },
+          admin: { email: adminEmail, name: adminName, password: adminPass },
+        }),
+      });
+      setResult(res);
+    } catch (err: any) {
+      setError(err.message || String(err));
+    }
+  }
+
+  return (
+    <div style={{ maxWidth: 720, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <h1>Painel ROOT - Criar Empresa + Admin</h1>
+      <p><Link href="/dashboard">Voltar ao Dashboard</Link></p>
+
+      <div style={{ display: 'grid', gap: 10 }}>
+        <input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Nome da empresa" style={{ padding: 10 }} />
+        <input value={cnpj} onChange={(e) => setCnpj(e.target.value)} placeholder="CNPJ" style={{ padding: 10 }} />
+
+        <hr />
+
+        <input value={adminEmail} onChange={(e) => setAdminEmail(e.target.value)} placeholder="Email do admin" style={{ padding: 10 }} />
+        <input value={adminName} onChange={(e) => setAdminName(e.target.value)} placeholder="Nome do admin" style={{ padding: 10 }} />
+        <input value={adminPass} onChange={(e) => setAdminPass(e.target.value)} placeholder="Senha do admin" style={{ padding: 10 }} />
+
+        <button onClick={create} style={{ padding: 10 }}>Criar</button>
+
+        {error && <p style={{ color: 'crimson' }}>{error}</p>}
+        {result && (
+          <pre style={{ padding: 12, border: '1px solid #ddd' }}>
+            {JSON.stringify(result, null, 2)}
+          </pre>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,131 @@
+'use client';
+
+import { useState } from 'react';
+import { setToken } from '@/lib/api';
+
+export default function LoginPage() {
+  const [user, setUser] = useState('');
+  const [pass, setPass] = useState('');
+  const [msg, setMsg] = useState('');
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setMsg('');
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: user, password: pass }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        setMsg(data?.message || data?.error || 'Falha no login');
+        return;
+      }
+
+      if (data?.token) setToken(data.token);
+
+      window.location.href = '/dashboard';
+    } catch (err: any) {
+      setMsg(err?.message || String(err));
+    }
+  }
+
+  return (
+    <main className="min-h-screen bg-slate-100">
+      <div className="bg-white">
+        <div className="max-w-6xl mx-auto px-6 py-8 text-center">
+          <div className="flex items-center justify-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-emerald-500/15 flex items-center justify-center">
+              <div className="w-5 h-5 rounded-full bg-emerald-500" />
+            </div>
+            <h1 className="text-4xl font-extrabold tracking-tight">
+              <span className="text-emerald-500">Geo</span>
+              <span className="text-blue-700">Fiber</span>
+              <span className="text-slate-900"> Maps</span>
+            </h1>
+          </div>
+          <p className="mt-3 text-slate-500">
+            Sistema completo para documentação<br />
+            gerenciamento de redes de fibra óptica
+          </p>
+        </div>
+        <div className="h-14 bg-emerald-500" />
+      </div>
+
+      <div className="bg-gradient-to-b from-blue-950 to-blue-900">
+        <div className="max-w-6xl mx-auto px-6 py-14">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            <div>
+              <h2 className="text-4xl font-extrabold text-white">Bem vindo,</h2>
+              <p className="mt-2 text-blue-100/90">faça login para acessar o sistema.</p>
+
+              <form onSubmit={onSubmit} className="mt-8 space-y-4 max-w-md">
+                <div>
+                  <label className="block text-sm text-blue-100 mb-2">Usuário</label>
+                  <input
+                    className="w-full rounded-md px-4 py-3 bg-white/95 text-slate-900 outline-none"
+                    value={user}
+                    onChange={(e) => setUser(e.target.value)}
+                    autoComplete="username"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm text-blue-100 mb-2">Senha</label>
+                  <input
+                    type="password"
+                    className="w-full rounded-md px-4 py-3 bg-white/95 text-slate-900 outline-none"
+                    value={pass}
+                    onChange={(e) => setPass(e.target.value)}
+                    autoComplete="current-password"
+                  />
+                </div>
+
+                <div className="text-right">
+                  <a href="#" className="text-xs text-blue-100/80 hover:text-blue-100 underline underline-offset-4">
+                    Esqueci minha senha
+                  </a>
+                </div>
+
+                {msg ? (
+                  <div className="rounded-md bg-rose-500/15 border border-rose-400/30 px-4 py-3 text-rose-100 text-sm">
+                    {msg}
+                  </div>
+                ) : null}
+
+                <button
+                  type="submit"
+                  className="w-full rounded-md bg-blue-700 hover:bg-blue-600 text-white font-semibold py-3"
+                >
+                  Entrar
+                </button>
+              </form>
+            </div>
+
+            <div className="flex flex-col items-center md:items-end">
+              <div className="w-56 h-56 rounded-2xl border border-blue-300/30 bg-blue-950/40 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-7xl font-extrabold text-cyan-300">15</div>
+                  <div className="text-2xl font-bold text-cyan-200 tracking-widest">ANOS</div>
+                </div>
+              </div>
+
+              <div className="mt-6 text-right">
+                <div className="text-white font-extrabold text-xl leading-tight">
+                  15 ANOS, DOCUMENTANDO REDES,
+                  <br />
+                  CONECTANDO O FUTURO
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="h-14 bg-emerald-500" />
+      </div>
+    </main>
+  );
+}
