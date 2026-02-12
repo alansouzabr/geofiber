@@ -1,76 +1,109 @@
+'use client';
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { apiFetch, setToken } from '@/lib/api';
+
+type LoginResp = {
+  accessToken: string;
+  error?: string;
+};
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState('');
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      setErr('');
+      setLoading(true);
+
+      const res = await apiFetch<LoginResp>('/auth/login', {
+        method: 'POST',
+        json: { email, password },
+      });
+
+      if (!res?.accessToken) {
+        throw new Error(res?.error || 'Login inválido (sem token).');
+      }
+
+      setToken(res.accessToken);
+      router.replace('/dashboard');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      setErr(msg);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="gf-shell">
       <div className="gf-card">
         <aside className="gf-left">
           <div className="gf-brand">
             <div className="gf-logo" aria-hidden="true" />
-            <div>
-              <h1 className="gf-h1">GeoFiber</h1>
-              <div style={{ color: 'var(--gf-muted)', fontSize: 13, marginTop: 2 }}>
-                NOC • FTTH • Backbone • Datacenter
-              </div>
-            </div>
-          </div>
-
-          <p className="gf-sub">
-            Plataforma de gestão técnica para redes ópticas — com rastreabilidade,
-            permissões por função e visão geográfica.
-          </p>
-
-          <div className="gf-badges">
-            <span className="gf-badge">Módulos isolados</span>
-            <span className="gf-badge">Auditoria pronta</span>
-            <span className="gf-badge">Fluxo PJ Telecom</span>
-            <span className="gf-badge">Segurança JWT</span>
-          </div>
-
-          <div style={{ marginTop: 18, color: 'var(--gf-muted)', fontSize: 13 }}>
-            <div style={{ marginBottom: 10 }}>
-              <strong style={{ color: 'rgba(255,255,255,.88)' }}>Dica:</strong> você
-              pode testar o cadastro PJ em{' '}
-              <Link href="/register-company">/register-company</Link>.
-            </div>
-            <div>© 2026 GeoFiber</div>
+            <div className="gf-title">GeoFiber</div>
+            <div className="gf-sub">Acesso ao Portal</div>
           </div>
         </aside>
 
         <section className="gf-right">
-          <h2 className="gf-title">Entrar</h2>
-          <div
-            style={{
-              color: 'var(--gf-muted)',
-              fontSize: 13,
-              marginBottom: 14,
-              lineHeight: 1.4,
-            }}
-          >
+          <h1 className="gf-h1">Entrar</h1>
+
+          <p className="gf-right-sub">
             Acesse sua conta para gerenciar sua empresa e operações (FTTH/Backbone/Datacenter).
-          </div>
+          </p>
 
-          <form>
-            <div className="gf-field">
-              <label className="gf-label">E-mail</label>
-              <input className="gf-input" placeholder="voce@empresa.com" />
+          {err ? (
+            <div className="gf-alert" role="alert">
+              {err}
             </div>
+          ) : null}
 
-            <div className="gf-field">
-              <label className="gf-label">Senha</label>
-              <input className="gf-input" type="password" placeholder="••••••••" />
-            </div>
+          <form onSubmit={onSubmit} className="gf-form">
+            <label className="gf-label">
+              E-mail
+              <input
+                className="gf-input"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                required
+              />
+            </label>
 
-            <button className="gf-btn" type="button">
-              Entrar
+            <label className="gf-label">
+              Senha
+              <input
+                className="gf-input"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
+            </label>
+
+            <button className="gf-btn" type="submit" disabled={loading}>
+              {loading ? 'Entrando…' : 'Entrar'}
             </button>
 
-            <div className="gf-linkrow">
-              <span>Sem conta?</span>
-              <Link href="/register-company">Cadastrar empresa</Link>
+            <div className="gf-foot">
+              <Link className="gf-link" href="/register-company">
+                Cadastrar empresa
+              </Link>
+              <span style={{ opacity: 0.6 }}>•</span>
+              <Link className="gf-link" href="/">
+                Voltar
+              </Link>
             </div>
-
-            <div className="gf-msg" style={{ display: 'none' }} />
           </form>
         </section>
       </div>

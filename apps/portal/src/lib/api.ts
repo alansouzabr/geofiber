@@ -1,10 +1,4 @@
-/**
- * API helper
- * - setToken/getToken/clearToken: client-side (localStorage)
- * - apiFetch: inclui Authorization automaticamente (quando houver token)
- */
-
-const TOKEN_KEY = 'geofiber_token';
+const TOKEN_KEY = 'gf_token';
 
 export function setToken(token: string) {
   if (typeof window === 'undefined') return;
@@ -21,39 +15,63 @@ export function clearToken() {
   window.localStorage.removeItem(TOKEN_KEY);
 }
 
-type ApiFetchOptions = RequestInit & {
-  json?: any;
+type ApiFetchOptions = {
+  method?: string;
+  headers?: Record<string, string>;
+  json?: unknown;
+  signal?: AbortSignal;
 };
 
-export async function apiFetch(path: string, opts: ApiFetchOptions = {}) {
-  const headers = new Headers(opts.headers || {});
-  headers.set('Accept', 'application/json');
+function resolveBaseUrl(): string {
+  // Em Next, env público só existe em build-time no bundle do client
+  const v = process.env.NEXT_PUBLIC_API_URL;
+  return v && v.trim().length ? v : 'http://127.0.0.1:3000';
+}
 
-  let body = opts.body;
+export async function apiFetch<T = unknown>(
+  path: string,
+  opts: ApiFetchOptions = {}
+): Promise<T> {
+  const base = resolveBaseUrl();
+  const url = path.startsWith('http') ? path : `${base}${path.startsWith('/') ? '' : '/'}${path}`;
 
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+    ...(opts.headers || {}),
+  };
+
+  const token = getToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  let body: string | undefined;
   if (opts.json !== undefined) {
-    headers.set('Content-Type', 'application/json');
+    headers['Content-Type'] = 'application/json';
     body = JSON.stringify(opts.json);
   }
 
-  const token = getToken();
-  if (token) headers.set('Authorization', `Bearer ${token}`);
+  const res = await fetch(url, {
+    method: opts.method || 'GET',
+    headers,
+    body,
+    signal: opts.signal,
+    credentials: 'include',
+  });
 
-  const res = await fetch(path, { ...opts, headers, body });
+  const contentType = res.headers.get('content-type') || '';
+  const isJson = contentType.includes('application/json');
 
-  const text = await res.text();
-  let data: any = text;
-  try {
-    data = text ? JSON.parse(text) : null;
-  } catch {}
+  const data: unknown = isJson ? await res.json().catch(() => null) : await res.text().catch(() => '');
 
   if (!res.ok) {
     const msg =
-      data?.message ||
-      data?.error ||
-      `HTTP ${res.status} ${res.statusText}`;
+      (typeof data === 'object' && data !== null && 'message' in data && typeof (data as { message: unknown }).message === 'string'
+        ? (data as { message: string }).message
+        : (typeof data === 'object' && data !== null && 'error' in data && typeof (data as { error: unknown }).error === 'string'
+            ? (data as { error: string }).error
+            : `HTTP ${res.status}`));
+
     throw new Error(msg);
   }
 
-  return data;
+  return data as T;
 }
