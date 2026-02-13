@@ -16,7 +16,7 @@ export default function CompaniesPage() {
   useEffect(() => {
     (async () => {
       try {
-        const r = await apiFetch('/companies/mine');
+        const r = await apiFetch<MineResp>('/companies/mine');
         setData(r);
 
         // Se só tiver 1 empresa, pula automático
@@ -24,7 +24,7 @@ export default function CompaniesPage() {
           localStorage.setItem('gf_company_id', r.companies[0].id);
           router.push('/dashboard');
         }
-      } catch (e: any) {
+      } catch (e: unknown) {
         setErr(e?.message || 'Erro');
       }
     })();

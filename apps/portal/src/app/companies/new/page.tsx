@@ -21,7 +21,7 @@ export default function NewCompanyPage() {
     setOk(null);
     setLoading(true);
     try {
-      const res = await apiFetch('/root/companies', {
+      const res = await apiFetch<{ ok: boolean; error?: string; company?: { id: string; name: string; cnpj?: string; razaoSocial?: string; isActive?: boolean } }>('/root/companies', {
         method: 'POST',
         body: JSON.stringify({
           company: { name, cnpj: cnpj || null },
@@ -29,9 +29,9 @@ export default function NewCompanyPage() {
         }),
       });
 
-      setOk(`Empresa criada: ${res?.data?.company?.name || name}`);
+      setOk(`Empresa criada: ${res?.company?.name || name}`);
       setTimeout(() => router.push('/companies'), 800);
-    } catch (e: any) {
+    } catch (e: unknown) {
       setErr(e?.message || 'Erro');
     } finally {
       setLoading(false);

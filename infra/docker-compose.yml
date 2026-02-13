@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: geofiber-postgres
+    environment:
+      POSTGRES_USER: geofiber
+      POSTGRES_PASSWORD: geofiber
+      POSTGRES_DB: geofiber
+    ports:
+      - "5432:5432"
+    volumes:
+      - geofiber_pg:/var/lib/postgresql/data
+volumes:
+  geofiber_pg:

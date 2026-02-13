@@ -28,7 +28,7 @@ ProjectsModule,
     RackEquipmentsModule,
 ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['../../.env'],
+      envFilePath: ['.env', '.env.local'],
     }),
     PrismaModule,
     CompaniesModule,

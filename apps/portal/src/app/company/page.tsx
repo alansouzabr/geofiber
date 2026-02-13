@@ -12,9 +12,12 @@ export default function CompanySelect() {
     (async () => {
       try {
         setErr('');
-        const data = await apiFetch('/api/companies');
+        type CompanyItem = { id: string; name: string; cnpj?: string | null; razaoSocial?: string | null; isActive?: boolean };
+  type CompaniesApiResp = CompanyItem[] | { items?: CompanyItem[] };
+
+        const data = await apiFetch<CompaniesApiResp>('/api/companies');
         setCompanies(Array.isArray(data) ? data : (data?.items || []));
-      } catch (e: any) {
+      } catch (e: unknown) {
         setErr(e?.message || String(e));
       }
     })();

@@ -21,7 +21,7 @@ export type FiberSignal = {
 };
 
 export async function login(email: string, password: string) {
-  const res = await apiFetch('/auth/login', {
+  const res = await apiFetch<{ accessToken: string }>('/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   });
@@ -29,32 +29,32 @@ export async function login(email: string, password: string) {
 }
 
 export async function listProjects() {
-  const res = await apiFetch('/projects');
+  const res = await apiFetch<{ data: unknown }>('/projects');
   return res.data;
 }
 
 export async function listStations(projectId: string) {
-  const res = await apiFetch(`/stations?projectId=${encodeURIComponent(projectId)}`);
+  const res = await apiFetch<{ data: unknown }>(`/stations?projectId=${encodeURIComponent(projectId)}`);
   return res.data;
 }
 
 export async function listRacks(stationId: string) {
-  const res = await apiFetch(`/racks?stationId=${encodeURIComponent(stationId)}`);
+  const res = await apiFetch<{ data: unknown }>(`/racks?stationId=${encodeURIComponent(stationId)}`);
   return res.data;
 }
 
 export async function listEquipments(rackId: string) {
-  const res = await apiFetch(`/rack-equipments?rackId=${encodeURIComponent(rackId)}`);
+  const res = await apiFetch<{ data: unknown }>(`/rack-equipments?rackId=${encodeURIComponent(rackId)}`);
   return res.data;
 }
 
 export async function getSignal(rackEquipmentId: string) {
-  const res = await apiFetch(`/fiber-signals/equipment/${encodeURIComponent(rackEquipmentId)}`);
+  const res = await apiFetch<{ data: unknown }>(`/fiber-signals/equipment/${encodeURIComponent(rackEquipmentId)}`);
   return res.data;
 }
 
 export async function updateSignalConfig(rackEquipmentId: string, body: Partial<FiberSignal>) {
-  const res = await apiFetch(
+  const res = await apiFetch<{ data: unknown }>(
     `/fiber-signals/equipment/${encodeURIComponent(rackEquipmentId)}/config`,
     { method: 'POST', body: JSON.stringify(body) },
   );
@@ -62,7 +62,7 @@ export async function updateSignalConfig(rackEquipmentId: string, body: Partial<
 }
 
 export async function tickSignal(rackEquipmentId: string, count: number) {
-  const res = await apiFetch(
+  const res = await apiFetch<{ data: unknown }>(
     `/fiber-signals/equipment/${encodeURIComponent(rackEquipmentId)}/tick`,
     { method: 'POST', body: JSON.stringify({ count }) },
   );

@@ -15,23 +15,20 @@ export function clearToken() {
   window.localStorage.removeItem(TOKEN_KEY);
 }
 
-type ApiFetchOptions = {
+export type ApiFetchOptions = {
   method?: string;
   headers?: Record<string, string>;
   json?: unknown;
+  body?: BodyInit | null;
   signal?: AbortSignal;
 };
 
 function resolveBaseUrl(): string {
-  // Em Next, env público só existe em build-time no bundle do client
   const v = process.env.NEXT_PUBLIC_API_URL;
   return v && v.trim().length ? v : 'http://127.0.0.1:3000';
 }
 
-export async function apiFetch<T = unknown>(
-  path: string,
-  opts: ApiFetchOptions = {}
-): Promise<T> {
+export async function apiFetch<T = unknown>(path: string, opts: ApiFetchOptions = {}): Promise<T> {
   const base = resolveBaseUrl();
   const url = path.startsWith('http') ? path : `${base}${path.startsWith('/') ? '' : '/'}${path}`;
 
@@ -43,9 +40,10 @@ export async function apiFetch<T = unknown>(
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  let body: string | undefined;
+  let body: BodyInit | null | undefined = opts.body;
+
   if (opts.json !== undefined) {
-    headers['Content-Type'] = 'application/json';
+    headers['Content-Type'] = headers['Content-Type'] || 'application/json';
     body = JSON.stringify(opts.json);
   }
 
@@ -64,11 +62,17 @@ export async function apiFetch<T = unknown>(
 
   if (!res.ok) {
     const msg =
-      (typeof data === 'object' && data !== null && 'message' in data && typeof (data as { message: unknown }).message === 'string'
+      (typeof data === 'object' &&
+      data !== null &&
+      'message' in data &&
+      typeof (data as { message: unknown }).message === 'string'
         ? (data as { message: string }).message
-        : (typeof data === 'object' && data !== null && 'error' in data && typeof (data as { error: unknown }).error === 'string'
-            ? (data as { error: string }).error
-            : `HTTP ${res.status}`));
+        : typeof data === 'object' &&
+          data !== null &&
+          'error' in data &&
+          typeof (data as { error: unknown }).error === 'string'
+          ? (data as { error: string }).error
+          : `HTTP ${res.status}`);
 
     throw new Error(msg);
   }

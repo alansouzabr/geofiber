@@ -1,5 +1,5 @@
 import RegisterCompanyForm from './RegisterCompanyForm';
 
-export default function RegisterCompanyPage() {
+export default function Page() {
   return <RegisterCompanyForm />;
 }

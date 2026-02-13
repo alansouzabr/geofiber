@@ -29,7 +29,7 @@ function maskCnpj(v: string) {
 
 function isValidCnpj(input: string) {
   const cnpj = onlyDigits(input);
-  if (cnpj.length != 14) return false;
+  if (cnpj.length !== 14) return false;
   if (/^(\d)\1{13}$/.test(cnpj)) return false;
 
   const calc = (base: number[]) => {
@@ -49,8 +49,20 @@ function isValidCnpj(input: string) {
   const nums = cnpj.split('').map((x) => Number(x));
   const d1 = calc(nums.slice(0, 12));
   const d2 = calc(nums.slice(0, 13));
-  return d1 === nums[12] && d2 === nums[13];
+  return d1 == nums[12] && d2 == nums[13];
 }
+
+type RegisterResp = {
+  ok: boolean;
+  error?: string;
+  company?: {
+    id: string;
+    name: string;
+    cnpj: string;
+    razaoSocial: string;
+    isActive: boolean;
+  };
+};
 
 export default function RegisterCompanyForm() {
   const router = useRouter();
@@ -106,10 +118,9 @@ export default function RegisterCompanyForm() {
         tiposOperacao,
       };
 
-      const data = await apiFetch('/companies/register-telecom', {
+      const data = await apiFetch<RegisterResp>('/companies/register-telecom', {
         method: 'POST',
-        body: JSON.stringify(payload),
-        headers: { 'Content-Type': 'application/json' },
+        json: payload,
       });
 
       if (data?.ok) {
@@ -135,135 +146,148 @@ export default function RegisterCompanyForm() {
   }
 
   return (
-    <div style={{ padding: 24 }}>
-      <h2 className="gf-title">Cadastro PJ Telecom</h2>
-
-      <div
-        style={{
-          color: 'var(--gf-muted)',
-          fontSize: 13,
-          marginBottom: 14,
-          lineHeight: 1.4,
-        }}
-      >
-        Cadastre sua empresa para acessar o GeoFiber Maps.
-      </div>
-
-      <form onSubmit={onSubmit}>
-        <div className="gf-field">
-          <label className="gf-label">Razão Social</label>
-          <input
-            className="gf-input"
-            placeholder="Ex.: GeoFiber Telecom LTDA"
-            value={razaoSocial}
-            onChange={(e) => setRazaoSocial(e.target.value)}
-            autoComplete="organization"
-            disabled={loading || redirecting}
-          />
-        </div>
-
-        <div className="gf-field">
-          <label className="gf-label">CNPJ</label>
-          <input
-            className="gf-input"
-            placeholder="00.000.000/0001-00"
-            value={cnpj}
-            onChange={(e) => setCnpj(maskCnpj(e.target.value))}
-            inputMode="numeric"
-            maxLength={18}
-            autoComplete="off"
-            disabled={loading || redirecting}
-          />
-        </div>
-
-        <div className="gf-field">
-          <label className="gf-label">Responsável técnico</label>
-          <input
-            className="gf-input"
-            placeholder="Nome do responsável"
-            value={responsavelTecnico}
-            onChange={(e) => setResponsavelTecnico(e.target.value)}
-            autoComplete="name"
-            disabled={loading || redirecting}
-          />
-        </div>
-
-        <div className="gf-field">
-          <label className="gf-label">CREA / CFT</label>
-          <input
-            className="gf-input"
-            placeholder="Ex.: CREA 12345 / CFT 12"
-            value={registroProfissional}
-            onChange={(e) => setRegistroProfissional(e.target.value)}
-            autoComplete="off"
-            disabled={loading || redirecting}
-          />
-        </div>
-
-        <div style={{ marginTop: 12 }}>
-          <div style={{ color: 'var(--gf-muted)', fontSize: 12, marginBottom: 8 }}>
-            Tipos de operação (múltiplo)
+    <>
+      <aside className="gf-left">
+          <div className="gf-brand">
+            <div className="gf-logo" aria-hidden="true" />
+            <div className="gf-title">GeoFiber</div>
+            <div className="gf-sub">Cadastro da Empresa</div>
           </div>
+        </aside>
 
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            {ops.map((op) => {
-              const active = tiposOperacao.includes(op.key);
-              const disabled = loading || redirecting;
+        <section className="gf-right">
+          <h1 className="gf-h1">Cadastrar empresa</h1>
 
-              return (
-                <button
-                  key={op.key}
-                  type="button"
-                  onClick={() => toggle(op.key)}
-                  disabled={disabled}
-                  className="gf-btn"
-                  style={{
-                    padding: '10px 12px',
-                    background: active ? 'rgba(34,197,94,0.18)' : 'rgba(255,255,255,0.06)',
-                    borderColor: active ? 'rgba(34,197,94,0.55)' : 'rgba(255,255,255,0.12)',
-                    color: 'rgba(255,255,255,0.92)',
-                    fontWeight: 700,
-                    width: 'auto',
-                    opacity: disabled ? 0.7 : 1,
-                    cursor: disabled ? 'not-allowed' : 'pointer',
-                  }}
-                >
-                  {op.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+          <p className="gf-right-sub">
+            Cadastre sua empresa para acessar o GeoFiber Maps e gerenciar operações (FTTH/Backbone/Datacenter).
+          </p>
 
-        <button
-          className="gf-btn"
-          type="submit"
-          disabled={loading || redirecting || tiposOperacao.length === 0}
-          style={{
-            marginTop: 14,
-            opacity: loading || redirecting ? 0.85 : 1,
-            cursor: loading || redirecting ? 'not-allowed' : 'pointer',
-          }}
-        >
-          {redirecting ? 'Abrindo login...' : loading ? 'Cadastrando...' : 'Cadastrar empresa'}
-        </button>
+          {msg ? (
+            <div
+              className="gf-alert"
+              role="alert"
+              style={{
+                borderColor: ok ? 'rgba(34,197,94,0.55)' : 'rgba(255,255,255,0.14)',
+                background: ok ? 'rgba(34,197,94,0.10)' : 'rgba(255,255,255,0.06)',
+              }}
+            >
+              {msg}
+            </div>
+          ) : null}
 
-        <div className="gf-linkrow" style={{ marginTop: 12 }}>
-          <Link href="/login">Voltar para login</Link>
-        </div>
+          <form onSubmit={onSubmit} className="gf-form">
+            <label className="gf-label">
+              Razão Social
+              <input
+                className="gf-input"
+                placeholder="Ex.: GeoFiber Telecom LTDA"
+                value={razaoSocial}
+                onChange={(e) => setRazaoSocial(e.target.value)}
+                autoComplete="organization"
+                disabled={loading || redirecting}
+                required
+              />
+            </label>
 
-        <div
-          className="gf-msg"
-          style={{
-            display: msg ? 'block' : 'none',
-            marginTop: 12,
-            color: ok ? 'rgba(34,197,94,.95)' : 'rgba(248,113,113,.95)',
-          }}
-        >
-          {msg}
-        </div>
-      </form>
-    </div>
+            <label className="gf-label">
+              CNPJ
+              <input
+                className="gf-input"
+                placeholder="00.000.000/0001-00"
+                value={cnpj}
+                onChange={(e) => setCnpj(maskCnpj(e.target.value))}
+                inputMode="numeric"
+                maxLength={18}
+                autoComplete="off"
+                disabled={loading || redirecting}
+                required
+              />
+            </label>
+
+            <label className="gf-label">
+              Responsável técnico
+              <input
+                className="gf-input"
+                placeholder="Nome do responsável"
+                value={responsavelTecnico}
+                onChange={(e) => setResponsavelTecnico(e.target.value)}
+                autoComplete="name"
+                disabled={loading || redirecting}
+                required
+              />
+            </label>
+
+            <label className="gf-label">
+              CREA / CFT
+              <input
+                className="gf-input"
+                placeholder="Ex.: CREA 12345 / CFT 12"
+                value={registroProfissional}
+                onChange={(e) => setRegistroProfissional(e.target.value)}
+                autoComplete="off"
+                disabled={loading || redirecting}
+                required
+              />
+            </label>
+
+            <div style={{ marginTop: 6 }}>
+              <div className="gf-small">
+                Tipos de operação (múltiplo)
+              </div>
+
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                {ops.map((op) => {
+                  const active = tiposOperacao.includes(op.key);
+                  const disabled = loading || redirecting;
+
+                  return (
+                    <button
+                      key={op.key}
+                      type="button"
+                      onClick={() => toggle(op.key)}
+                      disabled={disabled}
+                      className="gf-btn"
+                      style={{
+                        padding: '10px 12px',
+                        width: 'auto',
+                        fontWeight: 700,
+                        opacity: disabled ? 0.7 : 1,
+                        cursor: disabled ? 'not-allowed' : 'pointer',
+                        background: active ? 'rgba(25,211,255,0.18)' : 'rgba(255,255,255,0.06)',
+                        borderColor: active ? 'rgba(25,211,255,0.55)' : 'rgba(255,255,255,0.12)',
+                      }}
+                    >
+                      {op.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <button
+              className="gf-btn"
+              type="submit"
+              disabled={loading || redirecting || tiposOperacao.length === 0}
+              style={{
+                marginTop: 14,
+                opacity: loading || redirecting ? 0.85 : 1,
+                cursor: loading || redirecting ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {redirecting ? 'Abrindo login...' : loading ? 'Cadastrando...' : 'Cadastrar empresa'}
+            </button>
+
+            <div className="gf-foot">
+              <Link className="gf-link" href="/login">
+                Já tenho conta
+              </Link>
+              <span style={{ opacity: 0.6 }}>•</span>
+              <Link className="gf-link" href="/">
+                Voltar
+              </Link>
+            </div>
+          </form>
+        </section>
+    </>
   );
 }
-
