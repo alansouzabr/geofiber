@@ -1,0 +1,760 @@
+:root{
+  --gf-bg: #070B14;
+  --gf-panel: rgba(255,255,255,.06);
+  --gf-panel-2: rgba(255,255,255,.10);
+  --gf-border: rgba(255,255,255,.14);
+  --gf-text: rgba(255,255,255,.92);
+  --gf-muted: rgba(255,255,255,.68);
+
+  --gf-primary: #19D3FF;
+  --gf-primary-2: #00FFA8;
+
+  --gf-shadow: 0 30px 80px rgba(0,0,0,.55);
+  --gf-radius: 22px;
+}
+
+*{ box-sizing:border-box; }
+
+html,body{
+  height:100%;
+}
+
+body{
+  margin:0;
+  color:var(--gf-text);
+  background:
+    radial-gradient(1000px 600px at 20% 10%, rgba(25,211,255,.18), transparent 60%),
+    radial-gradient(900px 700px at 80% 20%, rgba(0,255,168,.12), transparent 55%),
+    radial-gradient(1100px 900px at 50% 90%, rgba(140,80,255,.10), transparent 60%),
+    var(--gf-bg);
+
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+}
+
+/* ---------- LAYOUT ---------- */
+.gf-shell{
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.gf-card{
+  width: 100%;
+  max-width: 1100px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(10,14,20,.65);
+  backdrop-filter: blur(18px);
+
+  /* Layout desktop: duas colunas (branding + form) */
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 18px;
+
+  padding: 18px;
+  box-shadow: 0 18px 60px rgba(0,0,0,.45);
+}
+
+/* Responsivo */
+@media (max-width: 900px){
+  .gf-card{
+    grid-template-columns:1fr;
+  }
+}
+
+/* ---------- LEFT PANEL ---------- */
+.gf-left{
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.04);
+  padding: 18px;
+}
+
+.gf-brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:18px;
+}
+
+.gf-logo{
+  width:48px;
+  height:48px;
+  border-radius:16px;
+  background:linear-gradient(135deg, rgba(25,211,255,.95), rgba(0,255,168,.85));
+  box-shadow:0 14px 40px rgba(25,211,255,.28);
+}
+
+.gf-title{
+  font-size:28px;
+  font-weight:800;
+}
+
+.gf-sub{
+  color:var(--gf-muted);
+  line-height:1.6;
+  margin-top:12px;
+  font-size:15px;
+}
+
+.gf-badges{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:20px;
+}
+
+.gf-badge{
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.25);
+  font-size:12px;
+  color:rgba(255,255,255,.85);
+}
+
+/* ---------- RIGHT PANEL ---------- */
+.gf-right{
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.02);
+  padding: 18px;
+}
+
+.gf-h1{
+  margin:0 0 12px 0;
+  font-size:26px;
+}
+
+.gf-desc{
+  font-size:14px;
+  color:var(--gf-muted);
+  margin-bottom:20px;
+  line-height:1.5;
+}
+
+/* ---------- FORM ---------- */
+
+.gf-form{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.gf-label{
+  font-size:12px;
+  color:var(--gf-muted);
+}
+
+.gf-input{
+  width:100%;
+  padding:14px 14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);
+  color:var(--gf-text);
+  outline:none;
+  font-size:14px;
+}
+
+.gf-input:focus{
+  border-color:rgba(25,211,255,.55);
+  box-shadow:0 0 0 4px rgba(25,211,255,.12);
+}
+
+.gf-btn{
+  margin-top:6px;
+  padding:14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(135deg, rgba(25,211,255,.95), rgba(0,255,168,.85));
+  color:#07101a;
+  font-weight:900;
+  cursor:pointer;
+  transition:transform .12s ease;
+}
+
+.gf-btn:hover{
+  transform:translateY(-1px);
+}
+
+.gf-btn:disabled{
+  opacity:.65;
+  cursor:not-allowed;
+}
+
+/* ---------- FOOTER LINKS ---------- */
+
+.gf-foot{
+  margin-top:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:13px;
+  color:var(--gf-muted);
+  gap:10px;
+}
+
+.gf-link{
+  color:rgba(255,255,255,.9);
+  text-decoration:none;
+  font-weight:600;
+}
+
+.gf-link:hover{
+  text-decoration:underline;
+}
+
+/* =========================
+   GeoFiber Typography (PADRÃO)
+   Use estas classes em TODAS as páginas
+   ========================= */
+
+:root{
+  --gf-font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+  --gf-fs-11: 11px;
+  --gf-fs-12: 12px;
+  --gf-fs-13: 13px;
+  --gf-fs-14: 14px;
+  --gf-fs-16: 16px;
+  --gf-fs-18: 18px;
+  --gf-fs-22: 22px;
+  --gf-fs-28: 28px;
+
+  --gf-text: rgba(255,255,255,.92);
+  --gf-muted: rgba(255,255,255,.70);
+  --gf-soft: rgba(255,255,255,.55);
+}
+
+html, body{
+  font-family: var(--gf-font);
+  color: var(--gf-text);
+}
+
+.gf-title{
+  font-size: var(--gf-fs-28);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.gf-sub{
+  font-size: var(--gf-fs-12);
+  line-height: 1.2;
+  color: var(--gf-muted);
+  font-weight: 600;
+}
+
+.gf-h1{
+  font-size: var(--gf-fs-22);
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 0 0 8px 0;
+}
+
+.gf-lead{
+  font-size: var(--gf-fs-14);
+  line-height: 1.45;
+  color: var(--gf-muted);
+  margin: 0 0 14px 0;
+}
+
+.gf-text{
+  font-size: var(--gf-fs-14);
+  line-height: 1.5;
+  color: var(--gf-text);
+}
+
+.gf-muted{
+  color: var(--gf-muted);
+}
+
+.gf-small{
+  font-size: var(--gf-fs-12);
+  line-height: 1.35;
+  color: var(--gf-muted);
+}
+
+.gf-label{
+  font-size: var(--gf-fs-12);
+  font-weight: 700;
+  color: var(--gf-soft);
+  letter-spacing: .01em;
+}
+
+/* “chips”/tags do card (igual visual do login) */
+.gf-chip{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.86);
+  font-size: var(--gf-fs-12);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.gf-tip{
+  margin-top: 14px;
+  font-size: var(--gf-fs-12);
+  color: var(--gf-muted);
+}
+.gf-tip b{
+  color: rgba(255,255,255,.86);
+  font-weight: 800;
+}
+
+/* =========================
+   Responsivo (mobile/tablet)
+   ========================= */
+@media (max-width: 900px){
+  .gf-shell{ padding: 16px; }
+
+  .gf-card{
+    grid-template-columns: 1fr; /* quebra para 1 coluna */
+    max-width: 720px;
+    padding: 14px;
+    gap: 14px;
+  }
+
+  .gf-left, .gf-right{
+    padding: 14px;
+  }
+
+  .gf-title{ font-size: 24px; }
+  .gf-h1{ font-size: 20px; }
+}
+
+@media (max-width: 520px){
+  .gf-shell{ padding: 12px; }
+
+  .gf-card{
+    border-radius: 16px;
+    padding: 12px;
+  }
+
+  .gf-left, .gf-right{
+    border-radius: 12px;
+    padding: 12px;
+  }
+
+  .gf-btn{ width: 100%; }
+}
+
+/* --- FIX: impedir texto duplicado por pseudo-elementos --- */
+.gf-title::before, .gf-title::after,
+.gf-sub::before, .gf-sub::after,
+.gf-h1::before, .gf-h1::after,
+.gf-right-sub::before, .gf-right-sub::after,
+.gf-label::before, .gf-label::after,
+.gf-btn::before, .gf-btn::after,
+.gf-link::before, .gf-link::after{
+  content: none !important;
+}
+
+/* --- RESPONSIVO: shell + card centralizado e quebra de colunas --- */
+.gf-shell{
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 3vw, 36px);
+}
+
+.gf-card{
+  width: min(1100px, 100%);
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 18px;
+  padding: 18px;
+
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(10,14,20,.65);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 60px rgba(0,0,0,.45);
+}
+
+/* garante que o lado direito fique bem alinhado */
+.gf-right{
+  min-width: 0;
+}
+
+/* mobile/tablet: vira 1 coluna e centraliza */
+@media (max-width: 900px){
+  .gf-card{
+    grid-template-columns: 1fr;
+    max-width: 560px;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .gf-left{
+    order: 1;
+  }
+
+  .gf-right{
+    order: 2;
+  }
+}
+
+/* mobile pequeno: ajusta paddings */
+@media (max-width: 420px){
+  .gf-shell{ padding: 14px; }
+  .gf-card{ padding: 14px; border-radius: 16px; }
+}
+
+/* ===============================
+   GeoFiber UI - Padrão Final
+   (coloque sempre no FINAL do arquivo)
+   =============================== */
+
+.gf-shell{
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 3vw, 40px);
+}
+
+/* Card centralizado e responsivo */
+.gf-card{
+  width: min(1100px, 100%);
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 18px;
+
+  padding: clamp(14px, 2.2vw, 20px);
+  border-radius: 18px;
+
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(10,14,20,.65);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 60px rgba(0,0,0,.45);
+}
+
+.gf-left, .gf-right{
+  min-width: 0;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+/* Mobile/tablet: vira 1 coluna e fica “bonito” */
+@media (max-width: 900px){
+  .gf-card{
+    grid-template-columns: 1fr;
+    max-width: 620px;
+    gap: 14px;
+  }
+
+  .gf-left{ order: 1; }
+  .gf-right{ order: 2; }
+}
+
+/* Mobile pequeno */
+@media (max-width: 520px){
+  .gf-card{
+    max-width: 100%;
+  }
+}
+
+
+/* ===============================
+   Auth UI (Login/Register) - Melhorias
+   * NÃO altera paleta de cores *
+   =============================== */
+
+.gf-auth{
+  /* mantém o fundo atual do body; só garante área central bem distribuída */
+  padding: clamp(18px, 4vw, 48px);
+}
+
+/* Card do auth: 1 coluna, largura “boa” e central */
+.gf-auth .gf-auth-card{
+  width: min(560px, 100%);
+  display: block;              /* mata grid do gf-card padrão (2 colunas) */
+  padding: clamp(18px, 3vw, 28px);
+  border-radius: 18px;
+}
+
+/* Títulos e textos: melhor hierarquia */
+.gf-auth .gf-h1{
+  font-size: clamp(24px, 3.2vw, 34px);
+  line-height: 1.15;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.02em;
+}
+
+.gf-auth .gf-right-sub,
+.gf-auth .gf-desc{
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0 0 16px 0;
+  color: var(--gf-muted);
+}
+
+/* Form mais “limpo” e consistente */
+.gf-auth .gf-form{
+  gap: 12px;
+}
+
+.gf-auth .gf-label{
+  font-size: 13px;
+  color: var(--gf-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Inputs: altura/raio/espacamento confortável */
+.gf-auth .gf-input{
+  padding: 14px 14px;
+  border-radius: 12px;
+}
+
+/* Link “Esqueci minha senha” / links menores */
+.gf-auth .gf-link{
+  font-size: 13px;
+}
+
+/* Botão principal: largura total e bem central */
+.gf-auth .gf-btn{
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px 16px;
+  border-radius: 12px;
+}
+
+/* Linha auxiliar (ex: "Esqueci minha senha") */
+.gf-auth .gf-row{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 2px;
+}
+
+/* Rodapé com contatos (email/whats) centralizado */
+.gf-auth .gf-auth-foot{
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--gf-muted);
+}
+
+.gf-auth .gf-auth-foot a{
+  color: rgba(255,255,255,.85);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.gf-auth .gf-auth-foot a:hover{
+  text-decoration: underline;
+}
+
+/* Mobile: aumenta respiro e evita “apertar” */
+@media (max-width: 520px){
+  .gf-auth .gf-auth-card{
+    padding: 16px;
+  }
+}
+
+/* ===============================
+   Auth UI (Login/Register) - Melhorias
+   * NÃO altera paleta de cores *
+   =============================== */
+
+.gf-auth{
+  /* mantém o fundo atual do body; só garante área central bem distribuída */
+  padding: clamp(18px, 4vw, 48px);
+}
+
+/* Card do auth: 1 coluna, largura “boa” e central */
+.gf-auth .gf-auth-card{
+  width: min(560px, 100%);
+  display: block;              /* mata grid do gf-card padrão (2 colunas) */
+  padding: clamp(18px, 3vw, 28px);
+  border-radius: 18px;
+}
+
+/* Títulos e textos: melhor hierarquia */
+.gf-auth .gf-h1{
+  font-size: clamp(24px, 3.2vw, 34px);
+  line-height: 1.15;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.02em;
+}
+
+.gf-auth .gf-right-sub,
+.gf-auth .gf-desc{
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0 0 16px 0;
+  color: var(--gf-muted);
+}
+
+/* Form mais “limpo” e consistente */
+.gf-auth .gf-form{
+  gap: 12px;
+}
+
+.gf-auth .gf-label{
+  font-size: 13px;
+  color: var(--gf-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Inputs: altura/raio/espacamento confortável */
+.gf-auth .gf-input{
+  padding: 14px 14px;
+  border-radius: 12px;
+}
+
+/* Link “Esqueci minha senha” / links menores */
+.gf-auth .gf-link{
+  font-size: 13px;
+}
+
+/* Botão principal: largura total e bem central */
+.gf-auth .gf-btn{
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px 16px;
+  border-radius: 12px;
+}
+
+/* Linha auxiliar (ex: "Esqueci minha senha") */
+.gf-auth .gf-row{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 2px;
+}
+
+/* Rodapé com contatos (email/whats) centralizado */
+.gf-auth .gf-auth-foot{
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--gf-muted);
+}
+
+.gf-auth .gf-auth-foot a{
+  color: rgba(255,255,255,.85);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.gf-auth .gf-auth-foot a:hover{
+  text-decoration: underline;
+}
+
+/* Mobile: aumenta respiro e evita “apertar” */
+@media (max-width: 520px){
+  .gf-auth .gf-auth-card{
+    padding: 16px;
+  }
+}
+
+/* BEGIN GF AUTH PREMIUM */
+/* ===========================
+   GF AUTH PREMIUM (CLEAN)
+   =========================== */
+
+.gf-auth{
+  padding: clamp(18px, 4vw, 48px);
+}
+
+.gf-auth .gf-auth-card{
+  width: min(940px, 94vw);
+  margin: 0 auto;
+  padding: 44px 48px 36px;
+  border-radius: 26px;
+
+  background: rgba(10,16,22,0.58);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow:
+    0 18px 70px rgba(0,0,0,0.55),
+    inset 0 0 0 1px rgba(255,255,255,0.03);
+  backdrop-filter: blur(10px);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gf-auth .gf-h1{
+  text-align: center;
+  margin: 0 0 10px 0;
+  font-size: 24px;
+  letter-spacing: .2px;
+}
+
+.gf-auth .gf-right-sub{
+  text-align: center;
+  margin: 0 0 18px 0;
+  opacity: .86;
+}
+
+.gf-auth .gf-form{
+  width: min(680px, 100%);
+  margin: 14px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.gf-auth .gf-row,
+.gf-auth .gf-auth-foot{
+  width: min(680px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.gf-auth .gf-label{
+  font-size: 12px;
+  opacity: .92;
+}
+
+.gf-auth .gf-input{
+  height: 46px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.gf-auth .gf-btn{
+  width: 100%;
+}
+
+/* responsivo */
+@media (max-width: 520px){
+  .gf-auth .gf-auth-card{
+    width: 94vw;
+    padding: 28px 18px 22px;
+    border-radius: 20px;
+  }
+
+  .gf-auth .gf-form,
+  .gf-auth .gf-row,
+  .gf-auth .gf-auth-foot{
+    width: 100%;
+  }
+}
+/* END GF AUTH PREMIUM */

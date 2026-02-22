@@ -1,3 +1,13 @@
+
+function normalizeApiPath(path: string) {
+  if (!path) return '/api';
+  if (/^https?:\/\//i.test(path)) return path;
+  if (!path.startsWith('/')) path = '/' + path;
+  if (path.startsWith('/api/')) return path;
+  if (path === '/api') return path;
+  return '/api' + path;
+}
+
 const TOKEN_KEY = 'gf_token';
 
 export function setToken(token: string) {
@@ -47,7 +57,7 @@ export async function apiFetch<T = unknown>(path: string, opts: ApiFetchOptions 
     body = JSON.stringify(opts.json);
   }
 
-  const res = await fetch(url, {
+  const res = await fetch(normalizeApiPath(url), {
     method: opts.method || 'GET',
     headers,
     body,

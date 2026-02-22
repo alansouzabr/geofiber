@@ -17,16 +17,16 @@ export default function RootCompaniesPage() {
     setError(null);
     setResult(null);
     try {
-      const res = await apiFetch('/root/companies', {
+      const res = await apiFetch('/api/root/companies', {
         method: 'POST',
         body: JSON.stringify({
           company: { name: companyName, cnpj },
           admin: { email: adminEmail, name: adminName, password: adminPass },
         }),
       });
-      setResult(res);
-    } catch (err: any) {
-      setError(err.message || String(err));
+      setResult(res as any);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : String(err));
     }
   }
 
@@ -48,9 +48,9 @@ export default function RootCompaniesPage() {
         <button onClick={create} style={{ padding: 10 }}>Criar</button>
 
         {error && <p style={{ color: 'crimson' }}>{error}</p>}
-        {result && (
+        {Boolean(result) && (
           <pre style={{ padding: 12, border: '1px solid #ddd' }}>
-            {JSON.stringify(result, null, 2)}
+            {JSON.stringify(result as any, null, 2)}
           </pre>
         )}
       </div>

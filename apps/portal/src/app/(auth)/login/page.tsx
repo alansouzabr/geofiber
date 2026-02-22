@@ -1,4 +1,7 @@
 'use client';
+import GeoFiberHeader from '@/components/GeoFiberHeader';
+import styles from './LoginAurora.module.css';
+
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -42,72 +45,95 @@ export default function LoginPage() {
     }
   }
 
-  return (
-    <section>
-      <h1 className="gf-h1">Bem vindo,</h1>
-      <p className="gf-right-sub">faça login para acessar o sistema.</p>
+    return (
+    <div className={styles.page}>
+      <div className={styles.stage}>
+        <div className={styles.aurora} />
+        <div className={styles.card}>
+          <div className="gf-auth">
+          <section className="gf-auth-card">
+                      <h1 className="gf-h1">Bem vindo,</h1>
+                      <p className="gf-right-sub">Faça login para Acessar o Sistema.</p>
 
-      {err ? (
-        <div className="gf-alert" role="alert">
-          {err}
+                      {err ? (
+                        <div className="gf-alert" role="alert">
+                          {err}
+                        </div>
+                      ) : null}
+
+                      <GeoFiberHeader />
+
+                      <form onSubmit={onSubmit} className="gf-form">
+                        <label className="gf-label">
+                          Usuário
+                          <input
+                            className="gf-input"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            autoComplete="email"
+                            required
+                            disabled={loading}
+                            placeholder="voce@empresa.com"
+                          />
+                        </label>
+
+                        <label className="gf-label">
+                          Senha
+                          <input
+                            className="gf-input"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            autoComplete="current-password"
+                            required
+                            disabled={loading}
+                            placeholder="••••••••"
+                          />
+                        </label>
+
+                        <div className="gf-row">
+                          <Link className="gf-link" href="#">
+                            Esqueci Minha Senha
+                          </Link>
+                        </div>
+
+                        <button className="gf-btn gf-btn-anim" type="submit" disabled={loading}>
+                          {loading ? 'Entrando…' : 'Entrar'}
+                        </button>
+
+                        <div className="gf-row" style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}>
+                          <Link className="gf-link" href="/register-company">
+                            Cadastrar Empresa
+                          </Link>
+                          <Link className="gf-link" href="/">
+                            Voltar
+                          </Link>
+                        </div>
+                      </form>
+
+                      <div
+                        className="gf-auth-foot"
+                        style={{
+                          marginTop: 24,
+                          display: 'flex',
+                          gap: 16,
+                          flexWrap: 'wrap',
+                        }}
+                      >
+                        <a className="gf-link" href="mailto:suporte@futurecloud.com.br">
+                          suporte@futurecloud.com.br
+                        </a>
+
+                        <a className="gf-link" href="tel:+5511914124464">
+                          (11) 91412-4464
+                        </a>
+                      </div>
+                    </section>
+          </div>
         </div>
-      ) : null}
-
-      <form onSubmit={onSubmit} className="gf-form">
-        <label className="gf-label">
-          Usuário
-          <input
-            className="gf-input"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
-            required
-            disabled={loading}
-            placeholder="voce@empresa.com"
-          />
-        </label>
-
-        <label className="gf-label">
-          Senha
-          <input
-            className="gf-input"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-            required
-            disabled={loading}
-            placeholder="••••••••"
-          />
-        </label>
-
-        <div className="gf-row">
-          {/* se você não tiver rota ainda, pode deixar como # por enquanto */}
-          <Link className="gf-link" href="#">
-            Esqueci minha senha
-          </Link>
-        </div>
-
-        <button className="gf-btn" type="submit" disabled={loading}>
-          {loading ? 'Entrando…' : 'Entrar'}
-        </button>
-
-        {/* se quiser, pode manter também um link de cadastro aqui */}
-        <div className="gf-foot" style={{ justifyContent: 'space-between' }}>
-          <Link className="gf-link" href="/register-company">
-            Cadastrar empresa
-          </Link>
-          <Link className="gf-link" href="/">
-            Voltar
-          </Link>
-        </div>
-      </form>
-
-      <div className="gf-auth-foot">
-        <a href="mailto:suporte@futurecloud.com.br">suporte@futurecloud.com.br</a>
-        <a href="tel:+5511952343399">(11) 91412-4464</a>
       </div>
-    </section>
+    </div>
   );
+
 }

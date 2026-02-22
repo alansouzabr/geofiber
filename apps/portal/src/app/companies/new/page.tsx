@@ -4,6 +4,17 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
 
+function errMsg(e: unknown) {
+  if (e instanceof Error) return e.message;
+  if (typeof e === 'string') return e;
+  if (e && typeof e === 'object') {
+    const m = (e as { message?: unknown }).message;
+    if (typeof m === 'string') return m;
+  }
+  return 'Erro';
+}
+
+
 export default function NewCompanyPage() {
   const router = useRouter();
   const [name, setName] = useState('');
@@ -32,7 +43,7 @@ export default function NewCompanyPage() {
       setOk(`Empresa criada: ${res?.company?.name || name}`);
       setTimeout(() => router.push('/companies'), 800);
     } catch (e: unknown) {
-      setErr(e?.message || 'Erro');
+      setErr(errMsg(e));
     } finally {
       setLoading(false);
     }

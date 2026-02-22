@@ -1,0 +1,190 @@
+.wrap{
+  text-align:center;
+  margin: 14px 0 12px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
+
+.logoWrap{
+  position:relative;
+  width:46px;
+  height:46px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.logoGlow{
+  position:absolute;
+  inset:-12px;
+  border-radius:999px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(0,224,164,.45), transparent 55%),
+    radial-gradient(circle at 70% 70%, rgba(0,168,255,.45), transparent 55%);
+  filter: blur(10px);
+  opacity:.9;
+  animation: pulse 2.8s ease-in-out infinite;
+  pointer-events:none;
+}
+
+.logo{
+  position:relative;
+  width:46px;
+  height:46px;
+  border-radius:999px;
+  background: linear-gradient(135deg, #00E0A4 0%, #00A8FF 100%);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 14px 40px rgba(0,0,0,.45);
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.logo::after{
+  content:"";
+  position:absolute;
+  inset:-60%;
+  background: linear-gradient(120deg, rgba(255,255,255,.30), rgba(255,255,255,0), rgba(255,255,255,.10));
+  transform: translateX(-40%) rotate(18deg);
+  animation: shine 3.6s ease-in-out infinite;
+  opacity:.35;
+}
+
+.titleBlock{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+
+.title{
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+
+  background: linear-gradient(90deg, #00E0A4 0%, #00A8FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sub{
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: .80;
+  color: #9CA3AF;
+}
+
+.badgeRow{
+  margin-top: 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 8px;
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 600;
+
+  color: rgba(255,255,255,.88);
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  box-shadow: 0 10px 24px rgba(0,0,0,.25);
+  backdrop-filter: blur(10px);
+}
+
+.dot{
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #00E0A4 0%, #00A8FF 100%);
+  box-shadow: 0 0 0 2px rgba(0,0,0,.20);
+}
+
+@keyframes pulse{
+  0%,100%{ transform: scale(1); opacity:.86; }
+  50%{ transform: scale(1.04); opacity:1; }
+}
+
+@keyframes shine{
+  0%{ transform: translateX(-45%) rotate(18deg); opacity:0; }
+  28%{ opacity:.35; }
+  50%{ transform: translateX(35%) rotate(18deg); opacity:.22; }
+  100%{ transform: translateX(35%) rotate(18deg); opacity:0; }
+}
+
+/* ===== V2 FULL CENTER ===== */
+.titleBlock{
+  align-items:center !important;
+  text-align:center !important;
+}
+
+.brand{
+  justify-content:center !important;
+}
+
+.sub{
+  text-align:center !important;
+}
+
+
+/* ===== Premium alignment for login header ===== */
+.wrap{
+  text-align: center;
+  margin: 18px 0 10px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 12px;
+}
+
+.titleBlock{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+
+/* em telas menores, centraliza tudo */
+@media (max-width: 520px){
+  .titleBlock{ align-items:center; }
+}
+
+/* badge central e com peso certo */
+.badge{
+  margin-top: 10px;
+  display:inline-flex;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+
+/* ===== V2: Header dead-center inside wide card ===== */
+.titleBlock{
+  align-items: center !important;
+  text-align: center !important;
+}
+.title{
+  text-align: center !important;
+}
+.sub{
+  text-align: center !important;
+}
+

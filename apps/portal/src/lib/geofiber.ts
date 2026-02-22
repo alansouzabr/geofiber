@@ -1,6 +1,6 @@
 import { apiFetch } from './api';
+import type { Project } from './types';
 
-export type Project = { id: string; name: string; createdAt: string };
 export type Station = { id: string; name: string; type: string; projectId: string };
 export type Rack = { id: string; name: string; stationId: string };
 export type RackEquipment = { id: string; name: string; type: string; rackId: string };
@@ -28,41 +28,35 @@ export async function login(email: string, password: string) {
   return res.accessToken;
 }
 
-export async function listProjects() {
-  const res = await apiFetch<{ data: unknown }>('/projects');
+export async function listProjects(): Promise<Project[]> {
+  const res = await apiFetch<{ data: Project[] }>('/projects');
   return res.data;
 }
-
-export async function listStations(projectId: string) {
-  const res = await apiFetch<{ data: unknown }>(`/stations?projectId=${encodeURIComponent(projectId)}`);
+export async function listStations(projectId: string): Promise<Station[]> {
+  const res = await apiFetch<{ data: Station[] }>(`/stations?projectId=${encodeURIComponent(projectId)}`);
   return res.data;
 }
-
-export async function listRacks(stationId: string) {
-  const res = await apiFetch<{ data: unknown }>(`/racks?stationId=${encodeURIComponent(stationId)}`);
+export async function listRacks(stationId: string): Promise<Rack[]> {
+  const res = await apiFetch<{ data: Rack[] }>(`/racks?stationId=${encodeURIComponent(stationId)}`);
   return res.data;
 }
-
-export async function listEquipments(rackId: string) {
-  const res = await apiFetch<{ data: unknown }>(`/rack-equipments?rackId=${encodeURIComponent(rackId)}`);
+export async function listEquipments(rackId: string): Promise<RackEquipment[]> {
+  const res = await apiFetch<{ data: RackEquipment[] }>(`/rack-equipments?rackId=${encodeURIComponent(rackId)}`);
   return res.data;
 }
-
-export async function getSignal(rackEquipmentId: string) {
-  const res = await apiFetch<{ data: unknown }>(`/fiber-signals/equipment/${encodeURIComponent(rackEquipmentId)}`);
+export async function getSignal(rackEquipmentId: string): Promise<FiberSignal> {
+  const res = await apiFetch<{ data: FiberSignal }>(`/fiber-signals/equipment/${encodeURIComponent(rackEquipmentId)}`);
   return res.data;
 }
-
-export async function updateSignalConfig(rackEquipmentId: string, body: Partial<FiberSignal>) {
-  const res = await apiFetch<{ data: unknown }>(
+export async function updateSignalConfig(rackEquipmentId: string, body: Partial<FiberSignal>): Promise<FiberSignal> {
+  const res = await apiFetch<{ data: FiberSignal }>(
     `/fiber-signals/equipment/${encodeURIComponent(rackEquipmentId)}/config`,
     { method: 'POST', body: JSON.stringify(body) },
   );
   return res.data;
 }
-
-export async function tickSignal(rackEquipmentId: string, count: number) {
-  const res = await apiFetch<{ data: unknown }>(
+export async function tickSignal(rackEquipmentId: string, count: number): Promise<FiberSignal> {
+  const res = await apiFetch<{ data: FiberSignal }>(
     `/fiber-signals/equipment/${encodeURIComponent(rackEquipmentId)}/tick`,
     { method: 'POST', body: JSON.stringify({ count }) },
   );

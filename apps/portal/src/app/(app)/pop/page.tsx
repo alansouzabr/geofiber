@@ -11,16 +11,33 @@ import {
   login,
   tickSignal,
   updateSignalConfig,
-  type FiberSignal,
-  type Project,
-  type Rack,
-  type RackEquipment,
-  type Station,
 } from '@/lib/geofiber';
+import type { FiberSignal, Rack, RackEquipment, Station } from '@/lib/geofiber';
+import type { Project } from '@/lib/types';
+
+function errMsg(e: unknown) {
+  if (e instanceof Error) return e.message;
+  if (typeof e === 'string') return e;
+  if (e && typeof e === 'object') {
+    const m = (e as { message?: unknown }).message;
+    if (typeof m === 'string') return m;
+  }
+  return 'Erro';
+}
 
 function fmt(n: number) {
   return Number.isFinite(n) ? n.toFixed(2) : '-';
 }
+
+
+function asObj<T>(v: unknown): T | null {
+  return v && typeof v === 'object' ? (v as T) : null;
+}
+
+function asArray<T>(v: unknown): T[] {
+  return Array.isArray(v) ? (v as T[]) : [];
+}
+
 
 export default function PopPage() {
   const [email, setEmail] = useState('admin@geofiber.local');
@@ -58,9 +75,9 @@ export default function PopPage() {
       const token = await login(email, password);
       setToken(token);
       setAuthed(true);
-    } catch (e: any) {
+    } catch (e: unknown) {
       setAuthed(false);
-      setErr(e?.message || 'Falha no login');
+      setErr(errMsg(e) || 'Falha no login');
     } finally {
       setLoading(null);
     }
@@ -72,9 +89,9 @@ export default function PopPage() {
       try {
         setLoading('Carregando POPs...');
         setErr(null);
-        setProjects(await listProjects());
-      } catch (e: any) {
-        setErr(e?.message || 'Erro');
+        setProjects(asArray<Project>(await listProjects()));
+      } catch (e: unknown) {
+        setErr(errMsg(e) || 'Erro');
       } finally {
         setLoading(null);
       }
@@ -95,9 +112,9 @@ export default function PopPage() {
     try {
       setLoading('Carregando stations...');
       setErr(null);
-      setStations(await listStations(id));
-    } catch (e: any) {
-      setErr(e?.message || 'Erro');
+      setStations(asArray<Station>(await listStations(id)));
+    } catch (e: unknown) {
+      setErr(errMsg(e) || 'Erro');
     } finally {
       setLoading(null);
     }
@@ -115,9 +132,9 @@ export default function PopPage() {
     try {
       setLoading('Carregando racks...');
       setErr(null);
-      setRacks(await listRacks(id));
-    } catch (e: any) {
-      setErr(e?.message || 'Erro');
+      setRacks(asArray<Rack>(await listRacks(id)));
+    } catch (e: unknown) {
+      setErr(errMsg(e) || 'Erro');
     } finally {
       setLoading(null);
     }
@@ -133,9 +150,9 @@ export default function PopPage() {
     try {
       setLoading('Carregando equipamentos...');
       setErr(null);
-      setEquipments(await listEquipments(id));
-    } catch (e: any) {
-      setErr(e?.message || 'Erro');
+      setEquipments(asArray<RackEquipment>(await listEquipments(id)));
+    } catch (e: unknown) {
+      setErr(errMsg(e) || 'Erro');
     } finally {
       setLoading(null);
     }
@@ -149,17 +166,20 @@ export default function PopPage() {
     try {
       setLoading('Carregando sinal...');
       setErr(null);
-      const s = await getSignal(id);
-      setSignal(s);
+      const sig = asObj<FiberSignal>(await getSignal(id));
+      setSignal(sig);
+      if (sig) {
+        
+              setMode(sig.mode);
+              setTargetTxDbm(String(sig.targetTxDbm));
+              setTargetRxDbm(String(sig.targetRxDbm));
+              setAttenuationDb(String(sig.attenuationDb));
+              setNoiseDb(String(sig.noiseDb));
+              setSteps(String(sig.steps));
+      }
 
-      setMode(s.mode);
-      setTargetTxDbm(String(s.targetTxDbm));
-      setTargetRxDbm(String(s.targetRxDbm));
-      setAttenuationDb(String(s.attenuationDb));
-      setNoiseDb(String(s.noiseDb));
-      setSteps(String(s.steps));
-    } catch (e: any) {
-      setErr(e?.message || 'Erro');
+    } catch (e: unknown) {
+      setErr(errMsg(e) || 'Erro');
     } finally {
       setLoading(null);
     }
@@ -178,9 +198,9 @@ export default function PopPage() {
         noiseDb: Number(noiseDb),
         steps: Number(steps),
       });
-      setSignal(updated);
-    } catch (e: any) {
-      setErr(e?.message || 'Erro');
+      setSignal(asObj<FiberSignal>(updated));
+    } catch (e: unknown) {
+      setErr(errMsg(e) || 'Erro');
     } finally {
       setLoading(null);
     }
@@ -192,9 +212,9 @@ export default function PopPage() {
       setLoading('Executando tick...');
       setErr(null);
       const updated = await tickSignal(equipmentId, Number(tickCount));
-      setSignal(updated);
-    } catch (e: any) {
-      setErr(e?.message || 'Erro');
+      setSignal(asObj<FiberSignal>(updated));
+    } catch (e: unknown) {
+      setErr(errMsg(e) || 'Erro');
     } finally {
       setLoading(null);
     }
@@ -293,7 +313,7 @@ export default function PopPage() {
                 <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <label>
                     <div style={{ fontSize: 12, opacity: 0.7 }}>Mode</div>
-                    <select value={mode} onChange={e => setMode(e.target.value as any)} style={{ width: '100%', padding: 10, borderRadius: 10 }}>
+                    <select value={mode} onChange={e => setMode(e.target.value as FiberSignal['mode'])} style={{ width: '100%', padding: 10, borderRadius: 10 }}>
                       <option value="STATIC">STATIC</option>
                       <option value="RANDOM_WALK">RANDOM_WALK</option>
                     </select>

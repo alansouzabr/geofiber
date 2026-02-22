@@ -5,6 +5,17 @@ import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
 import { clearToken } from '@/lib/auth';
 
+function errMsg(e: unknown) {
+  if (e instanceof Error) return e.message;
+  if (typeof e === 'string') return e;
+  if (e && typeof e === 'object') {
+    const m = (e as { message?: unknown }).message;
+    if (typeof m === 'string') return m;
+  }
+  return 'Erro';
+}
+
+
 type Company = { id: string; name: string; cnpj: string | null; createdAt: string };
 type MineResp = { isRoot: boolean; companies: Company[] };
 
@@ -25,7 +36,7 @@ export default function CompaniesPage() {
           router.push('/dashboard');
         }
       } catch (e: unknown) {
-        setErr(e?.message || 'Erro');
+        setErr(errMsg(e));
       }
     })();
   }, [router]);

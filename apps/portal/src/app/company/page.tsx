@@ -4,8 +4,28 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api';
 
+type Company = {
+  id?: string;
+  companyId?: string;
+  name?: string;
+  [key: string]: unknown;
+};
+
+
+function errMsg(e: unknown) {
+  if (e instanceof Error) return e.message;
+  if (typeof e === 'string') return e;
+  if (e && typeof e === 'object') {
+    const m = (e as { message?: unknown }).message;
+    if (typeof m === 'string') return m;
+  }
+  return String(e);
+}
+
+
+
 export default function CompanySelect() {
-  const [companies, setCompanies] = useState<any[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [err, setErr] = useState('');
 
   useEffect(() => {
@@ -16,9 +36,9 @@ export default function CompanySelect() {
   type CompaniesApiResp = CompanyItem[] | { items?: CompanyItem[] };
 
         const data = await apiFetch<CompaniesApiResp>('/api/companies');
-        setCompanies(Array.isArray(data) ? data : (data?.items || []));
+        setCompanies(Array.isArray(data) ? (data as Company[]) : ((data && typeof data === 'object' && 'items' in data) ? ((data as { items?: Company[] }).items ?? []) : []));
       } catch (e: unknown) {
-        setErr(e?.message || String(e));
+        setErr(errMsg(e));
       }
     })();
   }, []);

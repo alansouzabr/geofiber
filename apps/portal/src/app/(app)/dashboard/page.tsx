@@ -3,6 +3,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { apiFetch } from '@/lib/api';
 
+function errMsg(e: unknown) {
+  if (e instanceof Error) return e.message;
+  if (typeof e === 'string') return e;
+  if (e && typeof e === 'object') {
+    const m = (e as { message?: unknown }).message;
+    if (typeof m === 'string') return m;
+  }
+  return 'Erro';
+}
+
 function StatCard({ title, value, hint }: { title: string; value: string; hint?: string }) {
   return (
     <div className="rounded-3xl bg-white border border-slate-200 p-6 shadow-sm">
@@ -15,9 +25,9 @@ function StatCard({ title, value, hint }: { title: string; value: string; hint?:
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
-  const [projects, setProjects] = useState<any[]>([]);
-  const [stations, setStations] = useState<any[]>([]);
-  const [racks, setRacks] = useState<any[]>([]);
+  const [projects, setProjects] = useState<unknown[]>([]);
+  const [stations, setStations] = useState<unknown[]>([]);
+  const [racks, setRacks] = useState<unknown[]>([]);
   const [err, setErr] = useState<string>('');
 
   useEffect(() => {
@@ -32,15 +42,15 @@ export default function Dashboard() {
           apiFetch('/api/racks'),
         ]);
 
-        setProjects(p.status === 'fulfilled' ? (p.value as any[]) : []);
-        setStations(s.status === 'fulfilled' ? (s.value as any[]) : []);
-        setRacks(r.status === 'fulfilled' ? (r.value as any[]) : []);
+        setProjects(p.status === 'fulfilled' ? (p.value as unknown[]) : []);
+        setStations(s.status === 'fulfilled' ? (s.value as unknown[]) : []);
+        setRacks(r.status === 'fulfilled' ? (r.value as unknown[]) : []);
 
         if (p.status === 'rejected' || s.status === 'rejected' || r.status === 'rejected') {
           setErr('Alguns endpoints ainda não existem no backend (normal nesta fase).');
         }
-      } catch (e: any) {
-        setErr(e?.message || String(e));
+      } catch (e: unknown) {
+        setErr(errMsg(e));
       } finally {
         setLoading(false);
       }
