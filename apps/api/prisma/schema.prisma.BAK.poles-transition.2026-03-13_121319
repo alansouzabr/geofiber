@@ -37,25 +37,25 @@ model CompanyOperation {
   companyId String
   type      CompanyOperationType
 
-  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@unique([companyId, type])
 }
 
 model Company {
-  id   String  @id @default(uuid())
-  name String
-  cnpj String? @unique
+  id        String   @id @default(uuid())
+  name      String
+  cnpj      String?  @unique
 
   // PJ Telecom (novo - compatível)
   razaoSocial          String?
   responsavelTecnico   String?
   registroProfissional String?
-  isActive             Boolean @default(true)
+  isActive             Boolean  @default(true)
 
-  operations CompanyOperation[]
-  createdAt  DateTime           @default(now())
-  updatedAt  DateTime           @updatedAt
+  operations           CompanyOperation[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   users          User[]
   roles          Role[]
@@ -71,7 +71,6 @@ model Company {
   rackEquipments RackEquipment[]
   fiberSignals   FiberSignal[]
   projectFolders ProjectFolder[]
-  poles          Pole[]
 }
 
 model ProjectFolder {
@@ -83,14 +82,13 @@ model ProjectFolder {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  company  Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  parent   ProjectFolder?  @relation("ProjectFolderTree", fields: [parentId], references: [id], onDelete: SetNull)
+  company  Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  parent   ProjectFolder? @relation("ProjectFolderTree", fields: [parentId], references: [id], onDelete: SetNull)
   children ProjectFolder[] @relation("ProjectFolderTree")
-  poles    Pole[]
 
-  @@unique([companyId, parentId, name])
   @@index([companyId])
   @@index([companyId, parentId])
+  @@unique([companyId, parentId, name])
 }
 
 model User {
@@ -107,7 +105,6 @@ model User {
   roles       UserRole[]
   audits      AuditLog[]
   techProfile FieldTechnicianProfile?
-  poles       Pole[]
 
   @@unique([companyId, email])
 }
@@ -384,28 +381,22 @@ model FiberSignal {
   @@index([companyId])
 }
 
-model Pole {
-  id        String  @id @default(uuid())
-  companyId String
-  userId    String?
-  folderId  String?
+model poles {
+  id         String   @id @default(uuid())
+  company_id String
+  user_id    String?
+  folder_id  String?
+  name       String?
+  lat        Float
+  lng        Float
+  address    String?
+  notes      String?
+  visible    Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  name    String?
-  lat     Float
-  lng     Float
-  address String?
-  notes   String?
-
-  visible Boolean @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  company Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  folder  ProjectFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
-  user    User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  @@index([companyId])
-  @@index([companyId, folderId])
-  @@index([userId])
+  @@index([company_id])
+  @@index([company_id, folder_id])
+  @@index([user_id])
 }
+

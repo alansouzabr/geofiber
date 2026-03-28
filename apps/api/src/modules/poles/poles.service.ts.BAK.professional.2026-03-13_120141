@@ -1,0 +1,26 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+
+@Injectable()
+export class PolesService {
+  constructor(private prisma: PrismaService) {}
+
+  async create(data: { lat: number; lng: number; address?: string | null; companyId?: string | null }) {
+    return this.prisma.poles.create({
+      data: {
+        lat: data.lat,
+        lng: data.lng,
+        address: data.address ?? null,
+        company_id: data.companyId ?? null,
+      },
+    });
+  }
+
+  async list(companyId?: string) {
+    return this.prisma.poles.findMany({
+      where: companyId ? { company_id: companyId } : undefined,
+      orderBy: { created_at: 'desc' },
+      take: 1000,
+    });
+  }
+}

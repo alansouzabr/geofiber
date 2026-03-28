@@ -26,40 +26,24 @@ export class CompaniesController {
   @UseGuards(JwtAuthGuard)
   @Get('mine')
   async mine(@Req() req: any) {
-    const userId = req.user?.userId;
-
-    if (!userId) {
-      return { isRoot: false, companies: [], error: 'Sem userId no token' };
-    }
+    const companyId = req.user?.companyId ?? null;
 
     // ROOT (companyId null/undefined) pode listar tudo
-    if (req.user?.companyId === null || req.user?.companyId === undefined) {
+    if (companyId === null) {
       const companies = await this.prisma.company.findMany({
-        select: { id: true, name: true, cnpj: true, createdAt: true, isActive: true },
+        select: { id: true, name: true, razaoSocial: true, cnpj: true, createdAt: true, isActive: true },
         orderBy: { createdAt: 'desc' },
       });
       return { isRoot: true, companies };
     }
 
-    // Usuário comum: empresas via userRole -> role.company
-    const rows = await this.prisma.userRole.findMany({
-      where: { userId },
-      select: {
-        role: {
-          select: {
-            company: { select: { id: true, name: true, cnpj: true, createdAt: true, isActive: true } },
-          },
-        },
-      },
+    // Usuario comum: retorna a propria empresa do token
+    const company = await this.prisma.company.findUnique({
+      where: { id: companyId },
+      select: { id: true, name: true, razaoSocial: true, cnpj: true, createdAt: true, isActive: true },
     });
 
-    const map = new Map<string, any>();
-    for (const r of rows) {
-      const c = r.role?.company;
-      if (c?.id) map.set(c.id, c);
-    }
-
-    return { isRoot: false, companies: Array.from(map.values()) };
+    return { isRoot: false, companies: company ? [company] : [] };
   }
 
   @Get(':id')

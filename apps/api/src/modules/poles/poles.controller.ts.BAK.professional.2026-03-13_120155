@@ -1,0 +1,22 @@
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { PolesService } from './poles.service';
+
+@Controller('poles')
+export class PolesController {
+  constructor(private readonly poles: PolesService) {}
+
+  @Post()
+  async create(@Body() body: { lat: number; lng: number; address?: string; companyId?: string }) {
+    return this.poles.create({
+      lat: body.lat,
+      lng: body.lng,
+      address: body.address ?? null,
+      companyId: body.companyId ?? null,
+    });
+  }
+
+  @Get()
+  async list(@Query('companyId') companyId?: string) {
+    return this.poles.list(companyId);
+  }
+}

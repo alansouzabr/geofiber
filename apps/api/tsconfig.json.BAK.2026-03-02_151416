@@ -17,10 +17,6 @@
     "**/*.spec.ts",
     "test",
     "dist",
-    "src/server.ts",
-    "_bak_src_modules",
-    "src/modules/**/auth.bak.*",
-    "**/*.bak.*",
-    "**/*.BROKEN.*"
+    "src/server.ts"
   ]
 }
