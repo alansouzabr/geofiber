@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="48"
+     height="48"
+     viewBox="0 0 48 48">
+
+  <polygon
+    points="8,22 24,10 40,22"
+    fill="#ef4444"
+    stroke="#222"
+    stroke-width="2"/>
+
+  <rect
+    x="12"
+    y="22"
+    width="24"
+    height="16"
+    fill="#ffffff"
+    stroke="#222"
+    stroke-width="2"/>
+
+  <rect
+    x="21"
+    y="27"
+    width="6"
+    height="11"
+    fill="#9ca3af"/>
+
+</svg>

@@ -1,0 +1,624 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id         String             @id
+  name       String
+  cnpj       String?            @unique
+  personType CompanyPersonType?
+  firstName  String?
+  lastName   String?
+  cpf        String?            @unique
+
+  country       String?
+  cep           String?
+  address       String?
+  addressNumber String?
+  complement    String?
+  district      String?
+  city          String?
+  state         String?
+  phone         String?
+  email         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+  isActive      Boolean  @default(true)
+
+  kind CompanyKind @default(CLIENT)
+
+  status               CompanyStatus @default(PENDING)
+  razaoSocial          String?
+  registroProfissional String?
+  responsavelTecnico   String?
+  planId               String?
+  stripeCustomerId     String?
+  subscriptionId       String?
+
+  Plan                   Plan?                    @relation(fields: [planId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  AuditLog               AuditLog[]
+  CompanyOperation       CompanyOperation[]
+  FiberSignal            FiberSignal[]
+  FieldTechnicianProfile FieldTechnicianProfile[]
+  IntegrationConnection  IntegrationConnection[]
+  IntegrationEvent       IntegrationEvent[]
+  IntegrationMapping     IntegrationMapping[]
+  Permission             Permission[]
+  Project                Project[]
+  Rack                   Rack[]
+  RackEquipment          RackEquipment[]
+  Role                   Role[]
+  Station                Station[]
+  Pole                   Pole[]
+  PoleAccessory          PoleAccessory[]
+  ProjectFolder          ProjectFolder[]
+  User                   User[]
+  CompanyFile            CompanyFile[]
+
+  ChecklistTemplates  ChecklistTemplate[]
+  ChecklistExecutions ChecklistExecution[]
+}
+
+model Plan {
+  id        String   @id
+  name      String   @unique
+  price     Float
+  maxUsers  Int
+  maxTrts   Int
+  createdAt DateTime @default(now())
+
+  Company Company[]
+}
+
+model Project {
+  id        String   @id
+  companyId String
+  name      String
+  city      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  Company       Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  Station       Station[]
+  ProjectFolder ProjectFolder[]
+}
+
+model ProjectFolder {
+  id String @id
+
+  companyId String
+  projectId String
+
+  parentId String?
+
+  name String
+
+  nodeType String
+
+  createdAt DateTime @default(now())
+
+  Company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  Project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([projectId])
+}
+
+model Pole {
+  id        String @id
+  companyId String
+  name      String
+  type      String @default("POSTE_CONCRETO")
+
+  folderId String?
+
+  lat Float?
+  lng Float?
+
+  createdBy String?
+  createdAt DateTime @default(now())
+
+  Company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  accessories PoleAccessory[]
+
+  @@index([companyId])
+}
+
+model User {
+  id                     String                  @id
+  companyId              String?
+  email                  String
+  name                   String
+  passwordHash           String
+  isActive               Boolean                 @default(true)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime
+  AuditLog               AuditLog[]
+  FieldTechnicianProfile FieldTechnicianProfile?
+  Company                Company?                @relation(fields: [companyId], references: [id])
+  UserRole               UserRole[]
+
+  ChecklistTemplatesCreated  ChecklistTemplate[]  @relation("ChecklistTemplateCreatedBy")
+  ChecklistExecutionsStarted ChecklistExecution[] @relation("ChecklistExecutionStartedBy")
+
+  @@unique([companyId, email])
+}
+
+model AuditLog {
+  id          String   @id
+  companyId   String
+  actorUserId String?
+  action      String
+  entity      String
+  entityId    String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  User        User?    @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+  Company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model CompanyOperation {
+  id        String               @id
+  companyId String
+  type      CompanyOperationType
+  Company   Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, type])
+}
+
+model FiberSignal {
+  id              String        @id
+  companyId       String
+  rackEquipmentId String        @unique
+  enabled         Boolean       @default(true)
+  mode            SignalMode    @default(RANDOM_WALK)
+  targetTxDbm     Float         @default(0)
+  targetRxDbm     Float         @default(-20)
+  attenuationDb   Float         @default(0)
+  noiseDb         Float         @default(0)
+  steps           Int           @default(20)
+  txDbm           Float         @default(0)
+  rxDbm           Float         @default(-20)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime
+  Company         Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  RackEquipment   RackEquipment @relation(fields: [rackEquipmentId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+model FieldTechnicianProfile {
+  id             String                @id
+  companyId      String
+  userId         String                @unique
+  cboCode        String?
+  registration   String?
+  phone          String?
+  whatsapp       String?
+  city           String?
+  state          String?
+  skills         Json?
+  certifications Json?
+  tools          Json?
+  vehicle        Json?
+  availability   Json?
+  isActive       Boolean               @default(true)
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime
+  document       String?
+  specialties    TechnicianSpecialty[] @default([])
+  Company        Company               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  User           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  ChecklistExecutions ChecklistExecution[]
+
+  @@index([companyId])
+}
+
+model IntegrationConnection {
+  id              String              @id
+  companyId       String
+  provider        IntegrationProvider
+  baseUrl         String
+  authType        IntegrationAuthType
+  secretEncrypted String
+  isEnabled       Boolean             @default(true)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime
+  Company         Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, provider])
+}
+
+model IntegrationEvent {
+  id        String                 @id
+  companyId String
+  provider  IntegrationProvider
+  eventType String
+  payload   Json
+  status    IntegrationEventStatus @default(PENDING)
+  tries     Int                    @default(0)
+  lastError String?
+  createdAt DateTime               @default(now())
+  updatedAt DateTime
+  Company   Company                @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model IntegrationMapping {
+  id         String              @id
+  companyId  String
+  provider   IntegrationProvider
+  entityType String
+  externalId String
+  internalId String
+  updatedAt  DateTime
+  Company    Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, provider, entityType, externalId])
+}
+
+model Permission {
+  id             String           @id
+  key            String
+  createdAt      DateTime         @default(now())
+  companyId      String
+  description    String?
+  Company        Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  RolePermission RolePermission[]
+
+  @@unique([companyId, key])
+}
+
+model Rack {
+  id            String          @id
+  companyId     String
+  stationId     String
+  name          String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+  Company       Company         @relation(fields: [companyId], references: [id])
+  Station       Station         @relation(fields: [stationId], references: [id])
+  RackEquipment RackEquipment[]
+
+  @@index([companyId, stationId])
+}
+
+model RackEquipment {
+  id          String        @id
+  companyId   String
+  rackId      String
+  name        String
+  type        EquipmentType
+  vendor      String?
+  model       String?
+  serial      String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime
+  FiberSignal FiberSignal?
+  Company     Company       @relation(fields: [companyId], references: [id])
+  Rack        Rack          @relation(fields: [rackId], references: [id])
+
+  @@index([companyId, rackId])
+}
+
+model Role {
+  id             String           @id
+  companyId      String
+  name           String
+  createdAt      DateTime         @default(now())
+  Company        Company          @relation(fields: [companyId], references: [id])
+  RolePermission RolePermission[]
+  UserRole       UserRole[]
+
+  @@unique([companyId, name])
+}
+
+model RolePermission {
+  id           String     @id
+  roleId       String
+  permissionId String
+  Permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  Role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+model Station {
+  id        String      @id
+  companyId String
+  projectId String
+  type      StationType @default(POP)
+  name      String
+  address   String?
+  lat       Float?
+  lng       Float?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime
+  Rack      Rack[]
+  Company   Company     @relation(fields: [companyId], references: [id])
+  Project   Project     @relation(fields: [projectId], references: [id])
+
+  @@index([companyId, projectId])
+}
+
+model UserRole {
+  id     String @id
+  userId String
+  roleId String
+  Role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+}
+
+enum CompanyPersonType {
+  PF
+  PJ
+}
+
+enum CompanyKind {
+  MASTER
+  CLIENT
+}
+
+enum CompanyStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  REJECTED
+}
+
+enum CompanyOperationType {
+  FTTH
+  BACKBONE
+  DATACENTER
+}
+
+enum EquipmentType {
+  OLT
+  DIO
+  SPLITTER
+  PATCH_PANEL
+  ODF
+  ONU
+  ROUTER
+  SWITCH
+  OUTRO
+}
+
+enum IntegrationAuthType {
+  API_KEY
+  BASIC
+  OAUTH2
+}
+
+enum IntegrationEventStatus {
+  PENDING
+  PROCESSING
+  DONE
+  ERROR
+}
+
+enum IntegrationProvider {
+  SGP
+  IXC
+  OTHER
+}
+
+enum SignalMode {
+  STATIC
+  RANDOM_WALK
+}
+
+enum StationType {
+  POP
+  ARMARIO
+  TORRE
+  SALA_TECNICA
+  OUTRO
+}
+
+enum TechnicianSpecialty {
+  REDE
+  TELEFONIA
+  TRANSMISSAO
+  FTTH
+  FUSIONISTA
+}
+
+model PoleAccessory {
+  id        String @id
+  poleId    String
+  companyId String
+
+  type String
+  name String
+
+  capacity      Int?
+  occupiedPorts Int  @default(0)
+
+  status String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  Pole    Pole    @relation(fields: [poleId], references: [id], onDelete: Cascade)
+  Company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([poleId])
+  @@index([companyId])
+}
+
+model CompanyFile {
+  id String @id @default(uuid())
+
+  companyId String
+
+  name     String
+  fileName String
+  fileUrl  String
+
+  category String?
+  month    String?
+  year     String?
+
+  type String?
+  size Int?
+
+  uploadedBy String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([category])
+  @@index([month])
+}
+
+model GlobalLibraryFile {
+  id String @id @default(uuid())
+
+  category String
+
+  name     String
+  fileName String
+  fileUrl  String
+
+  month String?
+  year  String?
+
+  type String?
+  size Int?
+
+  uploadedBy String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+}
+
+// ETAPA32I2A_CHECKLIST_BEGIN
+
+enum ChecklistItemType {
+  BOOLEAN
+  TEXT
+  NUMBER
+  SELECT
+  MULTISELECT
+}
+
+enum ChecklistExecutionStatus {
+  DRAFT
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model ChecklistTemplate {
+  id              String   @id @default(uuid())
+  companyId       String
+  name            String
+  description     String?
+  category        String?
+  isActive        Boolean  @default(true)
+  createdByUserId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  Company Company @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  CreatedBy User? @relation("ChecklistTemplateCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  Items      ChecklistTemplateItem[]
+  Executions ChecklistExecution[]
+
+  @@index([companyId])
+  @@index([companyId, isActive])
+  @@index([createdByUserId])
+}
+
+model ChecklistTemplateItem {
+  id          String            @id @default(uuid())
+  templateId  String
+  sortOrder   Int               @default(0)
+  label       String
+  description String?
+  type        ChecklistItemType
+  required    Boolean           @default(false)
+  options     Json?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  Template ChecklistTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  ExecutionItems ChecklistExecutionItem[]
+
+  @@index([templateId])
+  @@index([templateId, sortOrder])
+}
+
+model ChecklistExecution {
+  id                  String                   @id @default(uuid())
+  companyId           String
+  templateId          String
+  technicianProfileId String?
+  startedByUserId     String?
+  status              ChecklistExecutionStatus @default(DRAFT)
+  startedAt           DateTime                 @default(now())
+  completedAt         DateTime?
+  notes               String?
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+
+  Company Company @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  Template ChecklistTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  TechnicianProfile FieldTechnicianProfile? @relation(fields: [technicianProfileId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  StartedBy User? @relation("ChecklistExecutionStartedBy", fields: [startedByUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  Items ChecklistExecutionItem[]
+
+  @@index([companyId])
+  @@index([templateId])
+  @@index([technicianProfileId])
+  @@index([startedByUserId])
+  @@index([companyId, status])
+}
+
+model ChecklistExecutionItem {
+  id                String            @id @default(uuid())
+  executionId       String
+  templateItemId    String?
+  sortOrderSnapshot Int               @default(0)
+  labelSnapshot     String
+  typeSnapshot      ChecklistItemType
+  requiredSnapshot  Boolean           @default(false)
+  optionsSnapshot   Json?
+  response          Json?
+  observation       String?
+  completedAt       DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  Execution ChecklistExecution @relation(fields: [executionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  TemplateItem ChecklistTemplateItem? @relation(fields: [templateItemId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([executionId])
+  @@index([templateItemId])
+  @@index([executionId, sortOrderSnapshot])
+}
+
+// ETAPA32I2A_CHECKLIST_END

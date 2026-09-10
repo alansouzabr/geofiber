@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="54"
+     height="70"
+     viewBox="0 0 54 70">
+
+  <rect
+    x="12"
+    y="8"
+    width="30"
+    height="48"
+    rx="3"
+    fill="#d9d9d9"
+    stroke="#222"
+    stroke-width="2"/>
+
+  <rect
+    x="17"
+    y="15"
+    width="20"
+    height="8"
+    fill="#5b7083"/>
+
+  <rect
+    x="17"
+    y="27"
+    width="20"
+    height="4"
+    fill="#5b7083"/>
+
+  <rect
+    x="17"
+    y="35"
+    width="20"
+    height="4"
+    fill="#5b7083"/>
+
+  <circle
+    cx="35"
+    cy="49"
+    r="2"
+    fill="#444"/>
+
+</svg>

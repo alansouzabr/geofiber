@@ -1,0 +1,93 @@
+# ============================================================
+# GEOFIBER — REPOSITORIO OFICIAL
+# ============================================================
+
+# Dependencias
+node_modules/
+**/node_modules/
+
+# Build
+.next/
+**/.next/
+dist/
+**/dist/
+.turbo/
+**/.turbo/
+coverage/
+**/coverage/
+
+# Ambiente e segredos
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Runtime
+apps/api/uploads/
+*.log
+**/*.log
+*.pid
+*.sock
+
+# Husky runtime
+.husky/_/
+
+# Backups / snapshots
+_backups/
+backups/
+**/backups/
+**/.backup*/
+**/.backups*/
+
+.geofiber-safe/
+.geofiber-installer-safe/
+
+apps/api_backup_*/
+apps/portal_backup_*/
+apps/web_backup_*/
+
+*.bak
+*.bak.*
+*.bkp
+*.bkp.*
+*.BKP
+*.BKP.*
+*.BKP-*
+*.BAK
+*.BAK.*
+*.BAK-*
+*.backup
+*.backup.*
+*.BACKUP
+*.BACKUP.*
+*.BACKUP-*
+*.BROKEN*
+*.corrompido*
+
+# Dumps
+*.tar.gz
+*.tgz
+*.dump
+*.sql.gz
+
+# Temporarios
+*.tmp
+*.swp
+*.swo
+*.orig
+*.rej
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Dados de teste
+cookies.txt
+*response.txt
+
+# Lockfile oficial
+# pnpm-lock.yaml NAO DEVE SER IGNORADO
+
+# Prisma
+# schema.prisma e migrations DEVEM SER VERSIONADOS

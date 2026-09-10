@@ -1,0 +1,3 @@
+#!/bin/sh
+cd apps/portal || exit 1
+pnpm lint-staged

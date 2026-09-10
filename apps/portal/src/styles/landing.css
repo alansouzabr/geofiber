@@ -1,0 +1,39 @@
+.gf-landing{
+  min-height:100vh;
+
+  background:
+    radial-gradient(circle at top,#082f49 0%,#020617 45%,#01030a 100%);
+
+  color:white;
+
+  font-family:Arial,sans-serif;
+}
+
+.gf-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:18px clamp(16px,4vw,40px);
+
+  border-bottom:1px solid rgba(255,255,255,.06);
+
+  position:sticky;
+  top:0;
+
+  backdrop-filter:blur(12px);
+
+  background:rgba(2,6,23,.7);
+
+  z-index:20;
+}
+
+.gf-hero{
+  padding:clamp(50px,8vw,90px) 20px 60px;
+
+  text-align:center;
+
+  max-width:1080px;
+
+  margin:0 auto;
+}

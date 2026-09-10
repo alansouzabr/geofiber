@@ -1,0 +1,79 @@
+export const ROLE = {
+
+  ROOT: 'ROOT',
+
+  MASTER: 'MASTER',
+
+  ADMIN: 'ADMIN',
+
+  ENGENHEIRO: 'ENGENHEIRO',
+
+  SUPERVISOR: 'SUPERVISOR',
+
+  TECNICO: 'TECNICO',
+
+  AJUDANTE: 'AJUDANTE',
+
+  PROJETISTA: 'PROJETISTA',
+
+  RH: 'RH',
+
+  FINANCEIRO: 'FINANCEIRO',
+
+  COMERCIAL: 'COMERCIAL',
+
+  ATENDENTE: 'ATENDENTE',
+
+
+} as const;
+
+export type RoleName =
+  typeof ROLE[keyof typeof ROLE];
+
+export const PLATFORM_ROLES = [
+
+  ROLE.ROOT,
+
+  ROLE.MASTER,
+
+] as const;
+
+export const COMPANY_ROLES = [
+
+  ROLE.ADMIN,
+
+  ROLE.ENGENHEIRO,
+
+  ROLE.SUPERVISOR,
+
+  ROLE.TECNICO,
+
+  ROLE.AJUDANTE,
+
+  ROLE.PROJETISTA,
+
+  ROLE.RH,
+
+  ROLE.FINANCEIRO,
+
+  ROLE.COMERCIAL,
+
+  ROLE.ATENDENTE,
+
+] as const;
+
+export const DEFAULT_ROLES = [
+
+  ...PLATFORM_ROLES,
+
+  ...COMPANY_ROLES,
+
+] as const;
+
+export const INITIAL_ROLE_MAP = {
+
+  MASTER: ROLE.ROOT,
+
+  CLIENT: ROLE.ADMIN,
+
+} as const;

@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "strict": true,
+    "skipLibCheck": true,
+    "types": [
+      "node"
+    ],
+    "outDir": "dist",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true
+  },
+  "exclude": [
+    "**/*.spec.ts",
+    "test",
+    "dist",
+    "src/server.ts",
+    "_bak_src_modules",
+    "src/modules/**/auth.bak.*",
+    "**/*.bak.*",
+    "**/*.BROKEN.*",
+    "backups",
+    "backups/**",
+    "**/*.BKP*",
+    "**/*.BACKUP*"
+  ]
+}

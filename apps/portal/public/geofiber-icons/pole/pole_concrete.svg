@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="44"
+     height="70"
+     viewBox="0 0 44 70">
+
+  <!-- poste -->
+
+  <rect
+    x="20"
+    y="8"
+    width="4"
+    height="58"
+    rx="2"
+    fill="#9d9d9d"
+    stroke="#444"
+    stroke-width="1"/>
+
+  <!-- cruzeta -->
+
+  <rect
+    x="10"
+    y="18"
+    width="24"
+    height="3"
+    rx="1"
+    fill="#555"/>
+
+  <!-- isoladores -->
+
+  <circle cx="13" cy="19.5" r="1.5" fill="#f2f2f2"/>
+  <circle cx="22" cy="19.5" r="1.5" fill="#f2f2f2"/>
+  <circle cx="31" cy="19.5" r="1.5" fill="#f2f2f2"/>
+
+</svg>

@@ -1,0 +1,33 @@
+{
+
+  "library":"GeoFiber Maps",
+
+  "version":"1.0",
+
+  "style":"GIS",
+
+  "theme":"flat",
+
+  "stroke":"2px",
+
+  "background":"transparent",
+
+  "defaultSize":[44,70],
+
+  "compatible":[
+
+    "Leaflet",
+
+    "React Leaflet",
+
+    "NextJS",
+
+    "QGIS",
+
+    "ArcGIS",
+
+    "GeoServer"
+
+  ]
+
+}

@@ -1,0 +1,54 @@
+.gf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, #7a00cc, #b300ff);
+  padding: 8px 16px;
+  height: 60px;
+  color: white;
+}
+
+.gf-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.08);
+  padding: 6px 12px;
+  border-radius: 12px;
+}
+
+.gf-logo-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #00e5ff, #007bff 60%, #002b80);
+  box-shadow:
+    0 0 10px rgba(0, 212, 255, 0.8),
+    inset 0 0 8px rgba(255,255,255,0.4);
+}
+
+.gf-title {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.gf-subtitle {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.gf-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.gf-search {
+  width: 300px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
